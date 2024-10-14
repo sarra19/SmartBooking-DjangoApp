@@ -22,9 +22,9 @@ class AccommodationReservation(Reservation):
 
 class FlightReservation(Reservation):
     seat_class = models.CharField(max_length=50, choices=[
-        ("Economique", "Economique"),
-        ("Affaires", "Affaires"),
-        ("Première", "Première"),
+        ("Economic", "Economic"),
+("Business", "Business"),
+("First", "First"),
     ])
     seat_numbers = models.PositiveIntegerField()
     flight = models.ForeignKey(Flight, on_delete=models.CASCADE, related_name='reservations')
