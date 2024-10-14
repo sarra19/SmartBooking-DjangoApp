@@ -1,0 +1,320 @@
+<!-- Sidebar -->
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+</head>
+<nav class="navbar-vertical navbar">
+    <div class="nav-scroller">
+        <!-- Brand logo -->
+        <a class="navbar-brand text-center" href="{% url 'back:home' %}">
+            <img src="{% static 'backOffice/assets/images/brand/logo/smart.png' %}" class="mb-2 img-fluid" alt="Logo" style="max-width: 80px; height: auto;">
+        </a>
+        <!-- Navbar nav -->
+        <ul class="navbar-nav flex-column" id="sideNavbar">
+            <li class="nav-item">
+                <a class="nav-link has-arrow {% if context.page == 'dashboard' %}active{% endif %}" href="{% url 'back:dashboard' %}">
+                    <i data-feather="home" class="nav-icon icon-xs me-2"></i>  Dashboard
+                </a>
+
+            </li>
+
+
+         <!-- Nav item -->
+         <li class="nav-item">
+            <div class="navbar-heading">Layouts & Pages</div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link has-arrow {% if context.page_group != 'pages' %}collapsed{% endif %}" href="#!" data-bs-toggle="collapse" data-bs-target="#navUser" aria-expanded="{% if context.page_group == 'pages' %}true{% else %}false{% endif %}" aria-controls="navUser">
+                <i data-feather="layers" class="nav-icon icon-xs me-2"></i> User 
+            </a>
+        
+            <div id="navUser" class="collapse {% if context.page_group == 'pages' %}show{% endif %}" data-bs-parent="#sideNavbar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if context.page == 'profile' %}active{% endif %}" href="{% url 'back:profile' %}">
+                            Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if context.page == 'settings' %}active{% endif %}" href="{% url 'back:settings' %}">
+                            Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if context.page == 'billing' %}active{% endif %}" href="{% url 'back:billing' %}">
+                            Billing
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if context.page == 'pricing' %}active{% endif %}" href="{% url 'back:pricing' %}">
+                            Pricing
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if context.page == '404error' %}active{% endif %}" href="{% url 'back:404error' %}">
+                            404 Error
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        
+        <!-- Nav item for Flights -->
+        <li class="nav-item">
+            <a class="nav-link has-arrow {% if context.page_group != 'flights' %}collapsed{% endif %}" href="#!" data-bs-toggle="collapse" data-bs-target="#navFlights" aria-expanded="{% if context.page_group == 'flights' %}true{% else %}false{% endif %}" aria-controls="navFlights">
+                <i data-feather="layers" class="nav-icon icon-xs me-2"></i> Flights
+            </a>
+        
+            <div id="navFlights" class="collapse {% if context.page_group == 'flights' %}show{% endif %}" data-bs-parent="#sideNavbar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if context.page == 'flights_profile' %}active{% endif %}" href="{% url 'back:profile' %}">
+                            Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if context.page == 'flights_settings' %}active{% endif %}" href="{% url 'back:settings' %}">
+                            Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if context.page == 'flights_billing' %}active{% endif %}" href="{% url 'back:billing' %}">
+                            Billing
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if context.page == 'flights_pricing' %}active{% endif %}" href="{% url 'back:pricing' %}">
+                            Pricing
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if context.page == 'flights_404error' %}active{% endif %}" href="{% url 'back:404error' %}">
+                            404 Error
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        
+
+                <li class="nav-item">
+                    <a class="nav-link has-arrow @@if (context.page_group !== 'pages') { collapsed }" href="#!" data-bs-toggle="collapse" data-bs-target="#navPages" aria-expanded="false" aria-controls="navPages">
+                        <i
+                        data-feather="layers"
+    
+                        class="nav-icon icon-xs me-2">
+                    </i> Reservation
+                    </a>
+    
+                    <div id="navPages" class="collapse @@if (context.page_group === 'pages') { show }" data-bs-parent="#sideNavbar">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link {% if context.page == 'profile' %}active{% endif %}" href="{% url 'back:profile' %}">
+                                    Profile
+                    </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link has-arrow {% if context.page == 'settings' %}active{% endif %}" href="{% url 'back:settings' %}">
+                                    Settings
+                                    </a>
+    
+                            </li>
+    
+    
+                            <li class="nav-item">
+                                <a class="nav-link {% if context.page == 'billing' %}active{% endif %}" href="{% url 'back:billing' %}">
+                                    Billing
+                    </a>
+                            </li>
+    
+    
+    
+    
+                            <li class="nav-item">
+                                <a class="nav-link {% if context.page == 'pricing' %}active{% endif %}" href="{% url 'back:pricing' %}">
+                                    Pricing
+                    </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if context.page == '404error' %}active{% endif %}" href="{% url 'back:404error' %}">
+                                    404 Error
+                    </a>
+                            </li>
+                        </ul>
+                    </div>
+    
+                    </li>
+    
+                    <!-- Nav item for Transports -->
+<li class="nav-item">
+    <a class="nav-link has-arrow {% if context.page_group != 'transports' %}collapsed{% endif %}" href="#!" data-bs-toggle="collapse" data-bs-target="#navTransports" aria-expanded="{% if context.page_group == 'transports' %}true{% else %}false{% endif %}" aria-controls="navTransports">
+        <i data-feather="lock" class="nav-icon icon-xs me-2"></i> Transports
+    </a>
+    <div id="navTransports" class="collapse {% if context.page_group == 'transports' %}show{% endif %}" data-bs-parent="#sideNavbar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if context.page == 'signin' %}active{% endif %}" href="{% url 'back:signin' %}">Sign In</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if context.page == 'signup' %}active{% endif %}" href="{% url 'back:signup' %}">Sign Up</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if context.page == 'forgetpassword' %}active{% endif %}" href="{% url 'back:forgetpassword' %}">Forget Password</a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<!-- Nav item for Events -->
+<li class="nav-item">
+    <a class="nav-link has-arrow {% if context.page_group != 'events' %}collapsed{% endif %}" href="#!" data-bs-toggle="collapse" data-bs-target="#navEvents" aria-expanded="{% if context.page_group == 'events' %}true{% else %}false{% endif %}" aria-controls="navEvents">
+        <i data-feather="lock" class="nav-icon icon-xs me-2"></i> Event
+    </a>
+    <div id="navEvents" class="collapse {% if context.page_group == 'events' %}show{% endif %}" data-bs-parent="#sideNavbar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if context.page == 'signin' %}active{% endif %}" href="{% url 'back:signin' %}">Sign In</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if context.page == 'signup' %}active{% endif %}" href="{% url 'back:signup' %}">Sign Up</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if context.page == 'forgetpassword' %}active{% endif %}" href="{% url 'back:forgetpassword' %}">Forget Password</a>
+            </li>
+        </ul>
+    </div>
+</li>
+<li class="nav-item">
+    <a class="nav-link has-arrow {% if context.page_group != 'accommodations' %}collapsed{% endif %}" href="#!" data-bs-toggle="collapse" data-bs-target="#navAccommodations" aria-expanded="{% if context.page_group == 'accommodations' %}true{% else %}false{% endif %}" aria-controls="navAccommodations">
+        <i data-feather="lock" class="nav-icon icon-xs me-2"></i> Accommodations
+    </a>
+    <div id="navAccommodations" class="collapse {% if context.page_group == 'accommodations' %}show{% endif %}" data-bs-parent="#sideNavbar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if context.page == 'signin' %}active{% endif %}" href="{% url 'back:layout' %}">Layouts</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if context.page == 'signup' %}active{% endif %}" href="{% url 'back:signup' %}">Sign Up</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if context.page == 'forgetpassword' %}active{% endif %}" href="{% url 'back:forgetpassword' %}">Forget Password</a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+
+
+                           
+                            <!-- Nav item -->
+                            <li class="nav-item">
+                                <div class="navbar-heading">UI Components</div>
+                            </li>
+                            
+                            <!-- Nav item -->
+                            <li class="nav-item">
+                                <a class="nav-link has-arrow {% if context.page == 'docs' %}active{% endif %}" href="{% url 'back:accordions' %}">
+                                    <i data-feather="package" class="nav-icon icon-xs me-2"></i>
+                                    Components
+                                </a>
+                            </li>
+                            
+
+                        <li class="nav-item">
+                            <a class="nav-link has-arrow @@if (context.page_group !== 'menulevel') { collapsed }" href="#!" data-bs-toggle="collapse" data-bs-target="#navMenuLevel" aria-expanded="false" aria-controls="navMenuLevel">
+                                <i
+                                data-feather="corner-left-down"
+
+                                class="nav-icon icon-xs me-2"
+                            >
+                            </i
+                                      > Menu Level
+                            </a>
+                            <div id="navMenuLevel" class="collapse @@if (context.page_group === 'menulevel') { show }" data-bs-parent="#sideNavbar">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link has-arrow @@if (context.page === 'twolevel') { active }" href="#!" data-bs-toggle="collapse" data-bs-target="#navMenuLevelSecond" aria-expanded="false" aria-controls="navMenuLevelSecond">
+                                    Two Level
+                                </a>
+                                        <div id="navMenuLevelSecond" class="collapse" data-bs-parent="#navMenuLevel">
+                                            <ul class="nav flex-column">
+                                                <li class="nav-item">
+                                                    <a class="nav-link @@if (context.page === 'navitem1') { active }" href="#!">  NavItem 1</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link @@if (context.page === 'navitem2') { active }" href="#!">  NavItem 2</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link has-arrow @@if (context.page_group !== 'threelevel') { collapsed } " href="#!" data-bs-toggle="collapse" data-bs-target="#navMenuLevelThree" aria-expanded="false" aria-controls="navMenuLevelThree">
+                                    Three Level
+                                </a>
+                                        <div id="navMenuLevelThree" class="collapse @@if (context.page_group === 'threelevel') { show }" data-bs-parent="#navMenuLevel">
+                                            <ul class="nav flex-column">
+                                                <li class="nav-item">
+                                                    <a class="nav-link @@if (context.page_group !== 'navitemthree1') { collapsed }" href="#!" data-bs-toggle="collapse" data-bs-target="#navMenuLevelThreeOne" aria-expanded="false" aria-controls="navMenuLevelThreeOne">
+                                                         NavItem 1
+                                            </a>
+                                                    <div id="navMenuLevelThreeOne" class="collapse collapse @@if (context.page_group === 'navitemthree1') { show }" data-bs-parent="#navMenuLevelThree">
+                                                        <ul class="nav flex-column">
+                                                            <li class="nav-item">
+                                                                <a class="nav-link @@if (context.page === 'navchilitem') { active }" href="#!">
+                                                                     NavChild Item 1
+                                                        </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link @@if (context.page === 'navitem2') { active }" href="#!">  Nav Item 2</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                                         <!-- Nav item -->
+                        <li class="nav-item">
+                            <div class="navbar-heading">Documentation</div>
+                        </li>
+
+                        <!-- Nav item -->
+                        <li class="nav-item">
+                            <a class="nav-link has-arrow {% if context.page == 'docs' %}active{% endif %}" href="{% url 'back:docs' %}">
+                                <i data-feather="clipboard" class="nav-icon icon-xs me-2" >
+                            </i>  Docs
+                            </a>
+                         </li>
+                         <li class="nav-item">
+                            <a class="nav-link has-arrow {% if context.page == 'changelog' %}active{% endif %}" href="{% url 'back:signin' %}">
+                                <i data-feather="git-pull-request" class="nav-icon icon-xs me-2" >
+                            </i>  Log out
+                            </a>
+                         </li>
+
+                         <li class="nav-item">
+                            <a class="nav-link has-arrow {% if context.page == 'dashboard' %}active{% endif %}" href="{% url 'front:indexF' %}">
+                                <i data-feather="home" class="nav-icon icon-xs me-2"></i>  Front Page
+                            </a>
+            
+                        </li>
+
+
+                    </ul>
+
+                </div>
+</nav>
+<script>
+    // Initialize Feather Icons
+    feather.replace();
+</script>
