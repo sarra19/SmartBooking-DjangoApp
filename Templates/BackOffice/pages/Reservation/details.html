@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include 'backOffice/partials/head.html' %}
+  <link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM4c5VJ1qQ4eE2jI2M6f4k99d9+U3p1m6pY2jH" crossorigin="anonymous">
+  <title>Accommodation Reservations</title>
+</head>
+
+<body class="bg-light">
+  <div id="db-wrapper">
+    {% include 'backOffice/partials/navbar-vertical.html' with page="Accommodation Reservations" page_group="reservations" subpage="accommodation" %}
+    
+    <div id="page-content">
+      {% include 'backOffice/partials/header.html' %}
+      <div class="container-fluid p-6">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-12">
+            <div class="border-bottom pb-4 mb-4">
+              <h3 class="mb-0 fw-bold">Reservation Details</h3>
+            </div>
+            <div class="card shadow-sm mb-4">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0 text-white ">Reservation Information</h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <strong>Name:</strong> <span class="text-muted">{{ reservation.name_reservation }}</span>
+                </div>
+                <div class="mb-3">
+                  <strong>CIN:</strong> <span class="text-muted">{{ reservation.cin }}</span>
+                </div>
+                <div class="mb-3">
+                  <strong>Phone Number:</strong> <span class="text-muted">{{ reservation.phone_number }}</span>
+                </div>
+                <div class="mb-3">
+                  <strong>Special Requests:</strong> <span class="text-muted">{{ reservation.special_requests }}</span>
+                </div>
+                
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>Flight:</strong>
+                    <span class="text-muted">{{ reservation.id_flight.id }} - {{ reservation.id_flight.flight_name }}</span>
+                  </div>
+                  <div>
+                    {% if reservation.id_flight.image %}
+                      <img src="{% static 'backOffice/assets/images' %}{{ reservation.id_flight.image.url }}" alt="{{ reservation.id_flight.flight_name }}" class="img-thumbnail" style="max-width: 150px;">
+                    {% else %}
+                      <img src="{% static 'backOffice/assets/images/flight_images/default_flight.jpg' %}" alt="Default Flight Image" class="img-thumbnail" style="max-width: 150px;">
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>Accommodation:</strong>
+                    <span class="text-muted">{{ reservation.id_accommodation.id }} - {{ reservation.id_accommodation.name }}</span>
+                  </div>
+                  <div>
+                    {% if reservation.id_accommodation.image %}
+                      <img src="{% static 'backOffice/assets/images' %}{{ reservation.id_accommodation.image.url }}" alt="{{ reservation.id_accommodation.name }}" class="img-thumbnail" style="max-width: 150px;">
+                    {% else %}
+                      <img src="{% static 'backOffice/assets/images/accommodation_images/default_accommodation.jpg' %}" alt="Default Accommodation Image" class="img-thumbnail" style="max-width: 150px;">
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>Transport:</strong>
+                    <span class="text-muted">{{ reservation.id_transport.id }} - {{ reservation.id_transport.title }}</span>
+                  </div>
+                  <div>
+                    {% if reservation.id_transport.image %}
+                      <img src="{% static 'backOffice/assets/images' %}{{ reservation.id_transport.image.url }}" alt="{{ reservation.id_transport.title }}" class="img-thumbnail" style="max-width: 150px;">
+                    {% else %}
+                      <img src="{% static 'backOffice/assets/images/transport_images/default_transport.jpg' %}" alt="Default Transport Image" class="img-thumbnail" style="max-width: 150px;">
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer text-end">
+                <a href="{% url 'reservation:update_reservation' reservation.id %}" class="btn btn-warning">
+                  <i data-feather="edit" class="icon-xxs"></i> Edit
+                </a>
+                <a href="{% url 'reservation:delete_reservation' reservation.id %}" class="btn btn-danger">
+                  <i data-feather="trash-2" class="icon-xxs"></i> Delete
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {% include "backOffice/partials/scripts.html" %}
+
+</body>
+
+</html>

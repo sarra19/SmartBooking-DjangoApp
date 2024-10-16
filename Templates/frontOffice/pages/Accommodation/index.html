@@ -1,0 +1,73 @@
+{% extends 'frontOffice/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <!-- Header Start -->
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h3 class="text-white display-3 mb-4">Our Accommodations</h3>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'front:indexF' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                <li class="breadcrumb-item active text-white">Accommodations</li>
+            </ol>    
+        </div>
+    </div>
+    <!-- Header End -->
+
+    <!-- Accommodations Start -->
+    <div class="container my-5">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="text-black text-center mb-4">Need Accommodations?</h2>
+            </div>
+            <div class="col text-end">
+                <a href="{% url 'reservation:Rsv-Trs-front' flight_id 0 %}" class="btn btn-link text-success mb-4">
+                    No thanks! 
+                    <i class="bi bi-arrow-right"></i> <!-- Bootstrap Icon -->
+                </a>
+            </div>
+        </div>
+        
+
+            {% for accommodation in accommodations %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card shadow-sm">
+                        {% if accommodation.image %}
+                            <img src="{{ accommodation.image.url }}" class="card-img-top" alt="{{ accommodation.name }}">
+                        {% else %}
+                            <img src="{% static 'backOffice/assets/images/accommodation_images/default_accommodation.jpg' %}" class="card-img-top" alt="Default Accommodation Image">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ accommodation.name }}</h5>
+                            <p class="card-text"><strong>Location:</strong> {{ accommodation.location }}, {{ accommodation.city }}</p>
+                            <p class="card-text"><strong>Type:</strong> {{ accommodation.type_of_accommodation }}</p>
+                            <p class="card-text"><strong>Price per Night:</strong> ${{ accommodation.price_per_night }}</p>
+                            <p class="card-text"><strong>Amenities:</strong> {{ accommodation.amenities.all|join:", " }}</p>
+                            <a href="{% url 'reservation:Rsv-Trs-front' flight_id accommodation.id %}" class="btn btn-success mt-2">Reserve</a>  <!-- Reserve Button -->
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Accommodations End -->
+
+    <!-- Subscribe Start -->
+    <div class="container-fluid subscribe py-5">
+        <div class="container text-center py-5">
+            <div class="mx-auto text-center" style="max-width: 900px;">
+                <h5 class="subscribe-title px-3">Subscribe</h5>
+                <h1 class="text-white mb-4">Our Newsletter</h1>
+                <p class="text-white mb-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum tempore nam, architecto doloremque velit explicabo? Voluptate sunt eveniet fuga eligendi! Expedita laudantium fugiat corrupti eum cum repellat a laborum quasi.</p>
+                <div class="position-relative mx-auto">
+                    <input class="form-control border-primary rounded-pill w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                    <button type="button" class="btn btn-primary rounded-pill position-absolute top-0 end-0 py-2 px-4 mt-2 me-2">Subscribe</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Subscribe End -->
+
+{% endblock %}
