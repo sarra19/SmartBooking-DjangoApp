@@ -164,7 +164,7 @@ class AddRsvfront(CreateView):
     model = Reservation
     template_name = 'frontOffice/pages/Reservation/add.html'
     form_class = ReservationForm
-    success_url = reverse_lazy('reservation:Rsv-flight-front')
+    success_url = reverse_lazy('reservation:myreservation', args=[1])
 
     def form_valid(self, form):
         flight_id = self.kwargs['pk']  # Flight ID
@@ -206,7 +206,7 @@ class delete_freservation(DeleteView):
     model = Reservation
     template_name = 'frontOffice/pages/Reservation/delete.html'
     
-    success_url=reverse_lazy("reservation:Rsv-flight-front") #a modifier?
+    success_url = reverse_lazy('reservation:myreservation', args=[1])
 
 
         
