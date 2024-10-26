@@ -23,6 +23,7 @@ urlpatterns = [
     path ('front/' , include('smartBooking_app.urls_front', namespace='front')),
     path ('back/' , include('smartBooking_app.urls_back', namespace='back')),
     path('', signin, name='signin'),  # Ajoutez cette ligne pour rediriger vers la vue home
+    path('event/', include(('Event.urls', 'Event'), namespace='Event')),
 
 
 ]
