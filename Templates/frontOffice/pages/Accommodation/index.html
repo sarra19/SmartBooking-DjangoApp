@@ -23,7 +23,7 @@
                 <h2 class="text-black text-center mb-4">Need Accommodations?</h2>
             </div>
             <div class="col text-end">
-                <a href="{% url 'reservation:Rsv-Trs-front' flight_id 0 %}" class="btn btn-link text-success mb-4">
+                <a href="{% url 'reservation:Rsv-front' flight_id 0 %}" class="btn btn-link text-success mb-4">
                     No thanks! 
                     <i class="bi bi-arrow-right"></i> <!-- Bootstrap Icon -->
                 </a>
@@ -41,7 +41,7 @@
                             <p class="card-text"><strong>Type:</strong> {{ accommodation.type_of_accommodation }}</p>
                             <p class="card-text"><strong>Price per Night:</strong> ${{ accommodation.price_per_night }}</p>
                             <p class="card-text"><strong>Amenities:</strong> {{ accommodation.amenities.all|join:", " }}</p>
-                            <a href="{% url 'reservation:Rsv-Trs-front' flight_id accommodation.id %}" class="btn btn-success mt-2">Reserve</a>  <!-- Reserve Button -->
+                            <a href="{% url 'reservation:Rsv-front' flight_id accommodation.id %}" class="btn btn-success mt-2">Reserve</a>  <!-- Reserve Button -->
                         </div>
                     </div>
                 </div>

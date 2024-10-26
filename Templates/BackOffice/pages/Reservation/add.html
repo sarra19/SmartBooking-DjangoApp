@@ -4,138 +4,175 @@
 <html lang="en">
 
 <head>
-  {% include 'backOffice/partials/head.html' %}
-  <link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-  <title>Add Accommodation Reservation</title>
+    {% include 'backOffice/partials/head.html' %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
+    <title>Add Accommodation Reservation</title>
 </head>
 
 <body class="bg-light">
-  <div id="db-wrapper">
-    {% include 'backOffice/partials/navbar-vertical.html' with page="Add Reservation" page_group="pages" subpage="accommodations" %}
+    <div id="db-wrapper">
+        {% include 'backOffice/partials/navbar-vertical.html' with page="Add Reservation" page_group="pages" subpage="accommodations" %}
 
-    <div id="page-content">
-      {% include 'backOffice/partials/header.html' %}
+        <div id="page-content">
+            {% include 'backOffice/partials/header.html' %}
 
-      <div class="container-fluid p-6">
-        <div class="row">
-          <div class="col-lg-12 col-md-12 col-12">
-            <div class="border-bottom pb-4 mb-4">
-              <h3 class="mb-0 fw-bold">Add Reservation</h3>
+            <div class="container-fluid p-6">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-12">
+                        <div class="border-bottom pb-4 mb-4">
+                            <h3 class="mb-0 fw-bold">Add Reservation</h3>
+                        </div>
+                    </div>
+                </div>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- Reservation Form -->
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 col-12 mx-auto">
+                        <form class="needs-validation" method="POST" novalidate>
+                            {% csrf_token %}
+
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Reservation Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <!-- Flight Selection -->
+                                        <div class="col-md-6">
+                                            <label for="{{ form.id_flight.id_for_label }}" class="form-label">Choose Flight</label>
+                                            <select id="{{ form.id_flight.id_for_label }}" name="{{ form.id_flight.name }}" class="form-select" >
+                                                <option value="" {% if not form.id_flight.value %}selected{% endif %}>No Flight</option>
+                                                {% for option in form.id_flight.field.queryset %}
+                                                <option value="{{ option.id }}" {% if option.id == form.id_flight.value %}selected{% endif %}>
+                                                    {{ option }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">Please select a flight.</div>
+                                        </div>
+
+                                        <!-- Accommodation Selection -->
+                                        <div class="col-md-6">
+                                            <label for="{{ form.id_accommodation.id_for_label }}" class="form-label">Choose Accommodation</label>
+                                            <select id="{{ form.id_accommodation.id_for_label }}" name="{{ form.id_accommodation.name }}" class="form-select" >
+                                                <option value="" {% if not form.id_accommodation.value %}selected{% endif %}>No Accommodation</option>
+                                                {% for option in form.id_accommodation.field.queryset %}
+                                                <option value="{{ option.id }}" {% if option.id == form.id_accommodation.value %}selected{% endif %}>
+                                                    {{ option }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">Please select accommodation.</div>
+                                        </div>
+
+                                        <!-- Event Selection -->
+                                        <div class="col-md-6">
+                                            <label for="{{ form.id_event.id_for_label }}" class="form-label">Choose Event</label>
+                                            <select id="{{ form.id_event.id_for_label }}" name="{{ form.id_event.name }}" class="form-select">
+                                                <option value="" {% if not form.id_event.value %}selected{% endif %}>No Event</option>
+                                                {% for option in form.id_event.field.queryset %}
+                                                <option value="{{ option.id }}" {% if option.id == form.id_event.value %}selected{% endif %}>
+                                                    {{ option }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Reservation Name -->
+                                        <div class="col-md-6">
+                                            <label for="{{ form.name_reservation.id_for_label }}" class="form-label">Reservation Name</label>
+                                            <input type="text" id="{{ form.name_reservation.id_for_label }}" name="{{ form.name_reservation.name }}" class="form-control" placeholder="Enter reservation name" value="{{ form.name_reservation.value }}" required>
+                                            <div class="invalid-feedback">Please enter a reservation name.</div>
+                                        </div>
+
+                                        <!-- CIN -->
+                                        <div class="col-md-6">
+                                            <label for="{{ form.cin.id_for_label }}" class="form-label">CIN</label>
+                                            <input type="text" id="{{ form.cin.id_for_label }}" name="{{ form.cin.name }}" class="form-control" placeholder="Enter your CIN" value="{{ form.cin.value }}" required maxlength="8" pattern="\d{8}">
+                                            <div class="invalid-feedback">Please enter your CIN (8 digits).</div>
+                                        </div>
+
+                                        <!-- Phone Number -->
+                                        <div class="col-md-6">
+                                            <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
+                                            <input type="text" id="{{ form.phone_number.id_for_label }}" name="{{ form.phone_number.name }}" class="form-control" placeholder="Enter your phone number" value="{{ form.phone_number.value }}" required maxlength="8" pattern="\d{8}">
+                                            <div class="invalid-feedback">Please enter your phone number (8 digits).</div>
+                                        </div>
+
+                                        <!-- Special Requests -->
+                                        <div class="col-12">
+                                            <label for="{{ form.special_requests.id_for_label }}" class="form-label">Special Requests</label>
+                                            <textarea id="{{ form.special_requests.id_for_label }}" name="{{ form.special_requests.name }}" class="form-control" placeholder="Any special requests..." rows="3">{{ form.special_requests.value }}</textarea>
+                                        </div>
+
+                                        <!-- Number of Travelers -->
+                                        <div class="col-md-6">
+                                            <label for="number_of_travelers" class="form-label">Number of Travelers</label>
+                                            <input type="number" id="number_of_travelers" name="number_of_travelers" class="form-control" placeholder="Enter number of travelers" required min="1" onchange="updatePassportFields()">
+                                            <div class="invalid-feedback">Please enter the number of travelers.</div>
+                                        </div>
+
+                                        <!-- Passport Numbers Fields -->
+                                        <div class="col-12" id="passport-fields"></div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Save Reservation</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-
-        <!-- Reservation Form -->
-        <div class="row">
-          <div class="col-lg-8 col-md-10 col-12 mx-auto">
-            <form class="needs-validation" method="POST" novalidate>
-              {% csrf_token %}
-
-              <div class="card shadow-sm mb-4">
-                <div class="card-header">
-                  <h5 class="mb-0">Reservation Details</h5>
-                </div>
-                <div class="card-body">
-                  <div class="row g-3">
-
-                    <!-- Flight Selection -->
-                    <div class="col-md-6">
-                      <label for="{{ form.id_flight.id_for_label }}" class="form-label">Choose Flight</label>
-                      <select id="{{ form.id_flight.id_for_label }}" name="{{ form.id_flight.name }}" class="form-select" required>
-                        {% for option in form.id_flight.field.queryset %}
-                          <option value="{{ option.id }}" {% if option.id == form.id_flight.value %}selected{% endif %}>
-                            {{ option }}
-                          </option>
-                        {% endfor %}
-                      </select>
-                      <div class="invalid-feedback">Please select a flight.</div>
-                    </div>
-
-                    <!-- Accommodation Selection -->
-                    <div class="col-md-6">
-                      <label for="{{ form.id_accommodation.id_for_label }}" class="form-label">Choose Accommodation</label>
-                      <select id="{{ form.id_accommodation.id_for_label }}" name="{{ form.id_accommodation.name }}" class="form-select" required>
-                        {% for option in form.id_accommodation.field.queryset %}
-                          <option value="{{ option.id }}" {% if option.id == form.id_accommodation.value %}selected{% endif %}>
-                            {{ option }}
-                          </option>
-                        {% endfor %}
-                      </select>
-                      <div class="invalid-feedback">Please select accommodation.</div>
-                    </div>
-
-                    <!-- Transport Selection -->
-                    <div class="col-md-6">
-                      <label for="{{ form.id_transport.id_for_label }}" class="form-label">Choose Transport</label>
-                      <select id="{{ form.id_transport.id_for_label }}" name="{{ form.id_transport.name }}" class="form-select" required>
-                        {% for option in form.id_transport.field.queryset %}
-                          <option value="{{ option.id }}" {% if option.id == form.id_transport.value %}selected{% endif %}>
-                            {{ option }}
-                          </option>
-                        {% endfor %}
-                      </select>
-                      <div class="invalid-feedback">Please select transport.</div>
-                    </div>
-
-                    <!-- Reservation Name -->
-                    <div class="col-md-6">
-                      <label for="{{ form.name_reservation.id_for_label }}" class="form-label">Reservation Name</label>
-                      <input type="text" id="{{ form.name_reservation.id_for_label }}" name="{{ form.name_reservation.name }}" class="form-control" placeholder="Enter reservation name" value="{{ form.name_reservation.value }}" required>
-                      <div class="invalid-feedback">Please enter a reservation name.</div>
-                    </div>
-
-                    <!-- CIN -->
-                    <div class="col-md-6">
-                      <label for="{{ form.cin.id_for_label }}" class="form-label">CIN</label>
-                      <input type="text" id="{{ form.cin.id_for_label }}" name="{{ form.cin.name }}" class="form-control" placeholder="Enter your CIN" value="{{ form.cin.value }}" required maxlength="8" pattern="\d{8}">
-                      <div class="invalid-feedback">Please enter your CIN (8 digits).</div>
-                    </div>
-
-                    <!-- Phone Number -->
-                    <div class="col-md-6">
-                      <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
-                      <input type="text" id="{{ form.phone_number.id_for_label }}" name="{{ form.phone_number.name }}" class="form-control" placeholder="Enter your phone number" value="{{ form.phone_number.value }}" required maxlength="8" pattern="\d{8}">
-                      <div class="invalid-feedback">Please enter your phone number (8 digits).</div>
-                    </div>
-
-                    <!-- Special Requests -->
-                    <div class="col-12">
-                      <label for="{{ form.special_requests.id_for_label }}" class="form-label">Special Requests</label>
-                      <textarea id="{{ form.special_requests.id_for_label }}" name="{{ form.special_requests.name }}" class="form-control" placeholder="Any special requests..." rows="3">{{ form.special_requests.value }}</textarea>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Submit Button -->
-              <div class="d-grid">
-                <button type="submit" class="btn btn-primary">Save Reservation</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 
-  {% include "backOffice/partials/scripts.html" %}
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    (function () {
-      'use strict';
-      var forms = document.querySelectorAll('.needs-validation');
-      Array.prototype.slice.call(forms).forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-          if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        }, false);
-      });
-    })();
-  </script>
+    {% include "backOffice/partials/scripts.html" %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+
+        function updatePassportFields() {
+    const passportFieldsContainer = document.getElementById('passport-fields');
+    const numberOfTravelers = document.getElementById('number_of_travelers').value;
+    passportFieldsContainer.innerHTML = ''; // Clear previous fields
+
+    for (let i = 1; i <= numberOfTravelers; i++) {
+        const passportField = document.createElement('div');
+        passportField.classList.add('mb-3');
+        passportField.innerHTML = `
+            <label for="passport_number_${i}" class="form-label">Passport Number ${i}</label>
+            <input type="text" id="passport_number_${i}" name="passport_numbers[]" class="form-control" placeholder="Enter passport number ${i}" required>
+            <div class="invalid-feedback">Please enter passport number ${i}.</div>
+        `;
+        passportFieldsContainer.appendChild(passportField);
+    }
+}
+
+    </script>
+
 </body>
 
 </html>

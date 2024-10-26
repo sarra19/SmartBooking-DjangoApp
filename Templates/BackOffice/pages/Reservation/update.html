@@ -39,41 +39,55 @@
                 <div class="card-body">
                   <div class="row g-3">
 
+                   <!-- Flight Selection -->
+<div class="col-md-6">
+  <label for="{{ form.id_flight.id_for_label }}" class="form-label">Choose Flight (Optional)</label>
+  <select id="{{ form.id_flight.id_for_label }}" name="{{ form.id_flight.name }}" class="form-select">
+    <option value="" {% if not form.id_flight.value %}selected{% endif %}>No Flight</option>
+    {% for option in form.id_flight.field.queryset %}
+      <option value="{{ option.id }}" {% if option.id == form.id_flight.value %}selected{% endif %}>
+        {{ option }}
+      </option>
+    {% endfor %}
+  </select>
+</div>
+
+<!-- Accommodation Selection -->
+<div class="col-md-6">
+  <label for="{{ form.id_accommodation.id_for_label }}" class="form-label">Choose Accommodation (Optional)</label>
+  <select id="{{ form.id_accommodation.id_for_label }}" name="{{ form.id_accommodation.name }}" class="form-select">
+    <option value="" {% if not form.id_accommodation.value %}selected{% endif %}>No Accommodation</option>
+    {% for option in form.id_accommodation.field.queryset %}
+      <option value="{{ option.id }}" {% if option.id == form.id_accommodation.value %}selected{% endif %}>
+        {{ option }}
+      </option>
+    {% endfor %}
+  </select>
+</div>
+<div class="col-md-6">
+  <label for="{{ form.id_event.id_for_label }}" class="form-label">Choose Event (Optional)</label>
+  <select id="{{ form.id_event.id_for_label }}" name="{{ form.id_event.name }}" class="form-select">
+    <option value="" {% if not form.id_event.value %}selected{% endif %}>No Event</option>
+    {% for option in form.id_event.field.queryset %}
+      <option value="{{ option.id }}" {% if option.id == form.id_event.value %}selected{% endif %}>
+        {{ option }}
+      </option>
+    {% endfor %}
+  </select>
+</div>
+
+                    <!-- Status Selection -->
                     <div class="col-md-6">
-                      <label for="{{ form.id_flight.id_for_label }}" class="form-label">Choose Flight</label>
-                      <select id="{{ form.id_flight.id_for_label }}" name="{{ form.id_flight.name }}" class="form-select" required>
-                        {% for option in form.id_flight.field.queryset %}
-                          <option value="{{ option.id }}" {% if option.id == form.id_flight.value %}selected{% endif %}>
-                            {{ option }}
-                          </option>
-                        {% endfor %}
+                      <label for="reservation-status" class="form-label">Status</label>
+                      <select id="reservation-status" name="status" class="form-select" required>
+                        <option value="" {% if not reservation.status %}selected{% endif %}>Choose Status...</option>
+                        <option value="accepted" {% if reservation.status == "accepted" %}selected{% endif %}>Accepted</option>
+                        <option value="pending" {% if reservation.status == "pending" %}selected{% endif %}>Pending</option>
+                        <option value="rejected" {% if reservation.status == "rejected" %}selected{% endif %}>Rejected</option>
                       </select>
-                      <div class="invalid-feedback">Please select a flight.</div>
+                      <div class="invalid-feedback">Please select a status.</div>
                     </div>
 
-                    <div class="col-md-6">
-                      <label for="{{ form.id_accommodation.id_for_label }}" class="form-label">Choose Accommodation</label>
-                      <select id="{{ form.id_accommodation.id_for_label }}" name="{{ form.id_accommodation.name }}" class="form-select" required>
-                        {% for option in form.id_accommodation.field.queryset %}
-                          <option value="{{ option.id }}" {% if option.id == form.id_accommodation.value %}selected{% endif %}>
-                            {{ option }}
-                          </option>
-                        {% endfor %}
-                      </select>
-                      <div class="invalid-feedback">Please select accommodation.</div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label for="{{ form.id_transport.id_for_label }}" class="form-label">Choose Transport</label>
-                      <select id="{{ form.id_transport.id_for_label }}" name="{{ form.id_transport.name }}" class="form-select" required>
-                        {% for option in form.id_transport.field.queryset %}
-                          <option value="{{ option.id }}" {% if option.id == form.id_transport.value %}selected{% endif %}>
-                            {{ option }}
-                          </option>
-                        {% endfor %}
-                      </select>
-                      <div class="invalid-feedback">Please select transport.</div>
-                    </div>
 
                     <div class="col-md-6">
                       <label for="{{ form.name_reservation.id_for_label }}" class="form-label">Reservation Name</label>

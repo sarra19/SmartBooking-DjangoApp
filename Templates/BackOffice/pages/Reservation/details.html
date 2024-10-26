@@ -23,9 +23,11 @@
             </div>
             <div class="card shadow-sm mb-4">
               <div class="card-header bg-primary text-white">
-                <h5 class="mb-0 text-white ">Reservation Information</h5>
+                <h5 class="mb-0 text-white">Reservation Information</h5>
               </div>
               <div class="card-body">
+                
+                <!-- Reservation Name and Details -->
                 <div class="mb-3">
                   <strong>Name:</strong> <span class="text-muted">{{ reservation.name_reservation }}</span>
                 </div>
@@ -36,50 +38,43 @@
                   <strong>Phone Number:</strong> <span class="text-muted">{{ reservation.phone_number }}</span>
                 </div>
                 <div class="mb-3">
-                  <strong>Special Requests:</strong> <span class="text-muted">{{ reservation.special_requests }}</span>
+                  <strong>Special Requests:</strong> <span class="text-muted">{{ reservation.special_requests|default:"None" }}</span>
                 </div>
                 
-                <div class="mb-3 d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>Flight:</strong>
-                    <span class="text-muted">{{ reservation.id_flight.id }} - {{ reservation.id_flight.flight_name }}</span>
-                  </div>
-                  <div>
+                {% if reservation.id_event %}
+                <p class="card-text text-warning">Event Reservation: {{ reservation.id_event.title }}</p>
+                <div class="mb-3 text-center">
+                    {% if reservation.id_event.image %}
+                        <img src="{% static 'backOffice/assets/images/events/default_event.jpg' %}" alt="{{ reservation.id_event.title }}" class="img-fluid" style="max-width: 100%; height: 200px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'backOffice/assets/images/events/default_event.jpg' %}" class="img-fluid" alt="Default Event Image" style="max-width: 100%; height: 200px; object-fit: cover;">
+                    {% endif %}
+                </div>
+            {% else %}
+                <!-- Flight Image -->
+                <div class="mb-3 text-center">
                     {% if reservation.id_flight.image %}
-                      <img src="{% static 'backOffice/assets/images' %}{{ reservation.id_flight.image.url }}" alt="{{ reservation.id_flight.flight_name }}" class="img-thumbnail" style="max-width: 150px;">
+                        <img src="{% static 'backOffice/assets/images/' %}{{ reservation.id_flight.image.url }}" alt="{{ reservation.id_flight.title }}" class="img-fluid" style="max-width: 100%; height: 200px; object-fit: cover;">
                     {% else %}
-                      <img src="{% static 'backOffice/assets/images/flight_images/default_flight.jpg' %}" alt="Default Flight Image" class="img-thumbnail" style="max-width: 150px;">
+                        <img src="{% static 'backOffice/assets/images/flights/default_flight.jpg' %}" class="img-fluid" alt="Default Flight Image" style="max-width: 100%; height: 200px; object-fit: cover;">
                     {% endif %}
-                  </div>
+                    <p class="card-text mt-2"><i class="fas fa-plane"></i> Flight: <strong>{{ reservation.id_flight }}</strong></p>
                 </div>
 
-                <div class="mb-3 d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>Accommodation:</strong>
-                    <span class="text-muted">{{ reservation.id_accommodation.id }} - {{ reservation.id_accommodation.name }}</span>
-                  </div>
-                  <div>
+                <!-- Accommodation Image -->
+                <div class="mb-3 text-center">
                     {% if reservation.id_accommodation.image %}
-                      <img src="{% static 'backOffice/assets/images' %}{{ reservation.id_accommodation.image.url }}" alt="{{ reservation.id_accommodation.name }}" class="img-thumbnail" style="max-width: 150px;">
+                        <img src="{% static 'backOffice/assets/images/' %}{{ reservation.id_accommodation.image.url }}" alt="{{ reservation.id_accommodation.title }}" class="img-fluid" style="max-width: 100%; height: 200px; object-fit: cover;">
                     {% else %}
-                      <img src="{% static 'backOffice/assets/images/accommodation_images/default_accommodation.png' %}" alt="Default Accommodation Image" class="img-thumbnail" style="max-width: 150px;">
+                        <img src="{% static 'backOffice/assets/images/accommodation_images/default_accommodation.png' %}" class="img-fluid" alt="Default Accommodation Image" style="max-width: 100%; height: 200px; object-fit: cover;">
                     {% endif %}
+                    <p class="card-text mt-2"><i class="fas fa-bed"></i> Accommodation: <strong>{{ reservation.id_accommodation }}</strong></p>
+                </div>
+            {% endif %}
                   </div>
                 </div>
 
-                <div class="mb-3 d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>Transport:</strong>
-                    <span class="text-muted">{{ reservation.id_transport.id }} - {{ reservation.id_transport.title }}</span>
-                  </div>
-                  <div>
-                    {% if reservation.id_transport.image %}
-                      <img src="{% static 'backOffice/assets/images' %}{{ reservation.id_transport.image.url }}" alt="{{ reservation.id_transport.title }}" class="img-thumbnail" style="max-width: 150px;">
-                    {% else %}
-                      <img src="{% static 'backOffice/assets/images/transport_images/default_transport.jpg' %}" alt="Default Transport Image" class="img-thumbnail" style="max-width: 150px;">
-                    {% endif %}
-                  </div>
-                </div>
+               
               </div>
               <div class="card-footer text-end">
                 <a href="{% url 'reservation:update_reservation' reservation.id %}" class="btn btn-warning">
