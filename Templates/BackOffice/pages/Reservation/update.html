@@ -26,12 +26,18 @@
           </div>
         </div>
 
-        <!-- Accommodation Reservation Form -->
         <div class="row">
           <div class="col-lg-8 col-md-10 col-12 mx-auto">
-            <form class="needs-validation" method="POST" novalidate>
+            <form class="needs-validation" method="POST" novalidate onsubmit="toggleTravelerFields();">
               {% csrf_token %}
-
+              {% if messages %}
+              <div class="alert alert-dismissible fade show" role="alert">
+                  {% for message in messages %}
+                      <div>{{ message }}</div>
+                  {% endfor %}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          {% endif %}
               <div class="card shadow-sm mb-4">
                 <div class="card-header">
                   <h5 class="mb-0">Reservation Details</h5>
@@ -39,81 +45,87 @@
                 <div class="card-body">
                   <div class="row g-3">
 
-                   <!-- Flight Selection -->
-<div class="col-md-6">
-  <label for="{{ form.id_flight.id_for_label }}" class="form-label">Choose Flight (Optional)</label>
-  <select id="{{ form.id_flight.id_for_label }}" name="{{ form.id_flight.name }}" class="form-select">
-    <option value="" {% if not form.id_flight.value %}selected{% endif %}>No Flight</option>
-    {% for option in form.id_flight.field.queryset %}
-      <option value="{{ option.id }}" {% if option.id == form.id_flight.value %}selected{% endif %}>
-        {{ option }}
-      </option>
-    {% endfor %}
-  </select>
-</div>
+                           <!-- Flight Selection -->
+                           <div class="col-md-6" id="flight-container">
+                            <label for="{{ form.id_flight.id_for_label }}" class="form-label">Choose Flight</label>
+                            <select id="{{ form.id_flight.id_for_label }}" name="{{ form.id_flight.name }}" class="form-select" onchange="toggleTravelerFields()">
+                                <option value="" {% if not form.id_flight.value %}selected{% endif %}>No Flight</option>
+                                {% for option in form.id_flight.field.queryset %}
+                                <option value="{{ option.id }}" {% if option.id == form.id_flight.value %}selected{% endif %}>
+                                    {{ option }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select a flight.</div>
+                        </div>
 
-<!-- Accommodation Selection -->
-<div class="col-md-6">
-  <label for="{{ form.id_accommodation.id_for_label }}" class="form-label">Choose Accommodation (Optional)</label>
-  <select id="{{ form.id_accommodation.id_for_label }}" name="{{ form.id_accommodation.name }}" class="form-select">
-    <option value="" {% if not form.id_accommodation.value %}selected{% endif %}>No Accommodation</option>
-    {% for option in form.id_accommodation.field.queryset %}
-      <option value="{{ option.id }}" {% if option.id == form.id_accommodation.value %}selected{% endif %}>
-        {{ option }}
-      </option>
-    {% endfor %}
-  </select>
-</div>
-<div class="col-md-6">
-  <label for="{{ form.id_event.id_for_label }}" class="form-label">Choose Event (Optional)</label>
-  <select id="{{ form.id_event.id_for_label }}" name="{{ form.id_event.name }}" class="form-select">
-    <option value="" {% if not form.id_event.value %}selected{% endif %}>No Event</option>
-    {% for option in form.id_event.field.queryset %}
-      <option value="{{ option.id }}" {% if option.id == form.id_event.value %}selected{% endif %}>
-        {{ option }}
-      </option>
-    {% endfor %}
-  </select>
-</div>
+                        <!-- Accommodation Selection -->
+                        <div class="col-md-6" id="accommodation-container">
+                            <label for="{{ form.id_accommodation.id_for_label }}" class="form-label">Choose Accommodation</label>
+                            <select id="{{ form.id_accommodation.id_for_label }}" name="{{ form.id_accommodation.name }}" class="form-select" onchange="toggleTravelerFields()">
+                                <option value="" {% if not form.id_accommodation.value %}selected{% endif %}>No Accommodation</option>
+                                {% for option in form.id_accommodation.field.queryset %}
+                                <option value="{{ option.id }}" {% if option.id == form.id_accommodation.value %}selected{% endif %}>
+                                    {{ option }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select accommodation.</div>
+                        </div>
 
-                    <!-- Status Selection -->
-                    <div class="col-md-6">
-                      <label for="reservation-status" class="form-label">Status</label>
-                      <select id="reservation-status" name="status" class="form-select" required>
-                        <option value="" {% if not reservation.status %}selected{% endif %}>Choose Status...</option>
-                        <option value="accepted" {% if reservation.status == "accepted" %}selected{% endif %}>Accepted</option>
-                        <option value="pending" {% if reservation.status == "pending" %}selected{% endif %}>Pending</option>
-                        <option value="rejected" {% if reservation.status == "rejected" %}selected{% endif %}>Rejected</option>
-                      </select>
-                      <div class="invalid-feedback">Please select a status.</div>
+                        <!-- Event Selection -->
+                        <div class="col-md-6" id="event-container">
+                            <label for="{{ form.id_event.id_for_label }}" class="form-label">Choose Event</label>
+                            <select id="{{ form.id_event.id_for_label }}" name="{{ form.id_event.name }}" class="form-select" onchange="toggleTravelerFields()">
+                                <option value="" {% if not form.id_event.value %}selected{% endif %}>No Event</option>
+                                {% for option in form.id_event.field.queryset %}
+                                <option value="{{ option.id }}" {% if option.id == form.id_event.value %}selected{% endif %}>
+                                    {{ option }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Reservation Name -->
+                        <div class="col-md-6">
+                            <label for="{{ form.name_reservation.id_for_label }}" class="form-label">Reservation Name</label>
+                            <input type="text" id="{{ form.name_reservation.id_for_label }}" name="{{ form.name_reservation.name }}" class="form-control" placeholder="Enter reservation name" value="{{ form.name_reservation.value }}" required>
+                            <div class="invalid-feedback">Please enter a reservation name.</div>
+                        </div>
+
+                        <!-- CIN -->
+                        <div class="col-md-6">
+                            <label for="{{ form.cin.id_for_label }}" class="form-label">CIN</label>
+                            <input type="text" id="{{ form.cin.id_for_label }}" name="{{ form.cin.name }}" class="form-control" placeholder="Enter your CIN" value="{{ form.cin.value }}" required maxlength="8" pattern="\d{8}">
+                            <div class="invalid-feedback">Please enter your CIN (8 digits).</div>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="col-md-6">
+                            <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
+                            <input type="text" id="{{ form.phone_number.id_for_label }}" name="{{ form.phone_number.name }}" class="form-control" placeholder="Enter your phone number" value="{{ form.phone_number.value }}" required maxlength="8" pattern="\d{8}">
+                            <div class="invalid-feedback">Please enter your phone number (8 digits).</div>
+                        </div>
+
+                        <!-- Special Requests -->
+                        <div class="col-12">
+                            <label for="{{ form.special_requests.id_for_label }}" class="form-label">Special Requests</label>
+                            <textarea id="{{ form.special_requests.id_for_label }}" name="{{ form.special_requests.name }}" class="form-control" placeholder="Any special requests..." rows="3">{{ form.special_requests.value }}</textarea>
+                        </div>
+
+                        <!-- Number of Travelers -->
+                        <div class="col-md-6" id="number-of-travelers-container" style="display:block;">
+                            <label for="number_of_travelers" class="form-label">Number of Travelers</label>
+                            <input type="number" id="number_of_travelers" name="number_of_travelers" class="form-control" placeholder="Enter number of travelers" min="1" onchange="updatePassportFields()">
+                            <div class="invalid-feedback">Please enter the number of travelers.</div>
+                        </div>
+
+                        <!-- Passport Numbers Fields -->
+                        <div class="col-12" id="passport-fields" style="display:none;"></div>
+
                     </div>
-
-
-                    <div class="col-md-6">
-                      <label for="{{ form.name_reservation.id_for_label }}" class="form-label">Reservation Name</label>
-                      <input type="text" id="{{ form.name_reservation.id_for_label }}" name="{{ form.name_reservation.name }}" class="form-control" placeholder="Enter reservation name" value="{{ form.name_reservation.value }}" required>
-                      <div class="invalid-feedback">Please enter a reservation name.</div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label for="{{ form.cin.id_for_label }}" class="form-label">CIN</label>
-                      <input type="number" id="{{ form.cin.id_for_label }}" name="{{ form.cin.name }}" class="form-control" placeholder="Enter your CIN" value="{{ form.cin.value }}" required>
-                      <div class="invalid-feedback">Please enter your CIN.</div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
-                      <input type="text" id="{{ form.phone_number.id_for_label }}" name="{{ form.phone_number.name }}" class="form-control" placeholder="Enter your phone number" value="{{ form.phone_number.value }}" required maxlength="8" pattern="\d{8}">
-                      <div class="invalid-feedback">Please enter your phone number (8 digits).</div>
-                    </div>
-
-                    <div class="col-12">
-                      <label for="{{ form.special_requests.id_for_label }}" class="form-label">Special Requests</label>
-                      <textarea id="{{ form.special_requests.id_for_label }}" name="{{ form.special_requests.name }}" class="form-control" placeholder="Any special requests..." rows="3">{{ form.special_requests.value }}</textarea>
-                    </div>
-                  </div>
                 </div>
-              </div>
+            </div>
 
               <!-- Submit Button -->
               <div class="d-grid">
@@ -130,19 +142,83 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     (function () {
-      'use strict';
-      var forms = document.querySelectorAll('.needs-validation');
-      Array.prototype.slice.call(forms).forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-          if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        }, false);
-      });
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
     })();
-  </script>
+
+    function toggleTravelerFields() {
+        const numberOfTravelersContainer = document.getElementById('number-of-travelers-container');
+        const passportFieldsContainer = document.getElementById('passport-fields');
+        const eventContainer = document.getElementById('event-container');
+        const flightContainer = document.getElementById('flight-container');
+        const accommodationContainer = document.getElementById('accommodation-container');
+        const flightSelect = document.getElementById('{{ form.id_flight.id_for_label }}');
+        const accommodationSelect = document.getElementById('{{ form.id_accommodation.id_for_label }}');
+        const eventSelect = document.getElementById('{{ form.id_event.id_for_label }}');
+
+        const selectedFlight = flightSelect.value;
+        const selectedAccommodation = accommodationSelect.value;
+        const selectedEvent = eventSelect.value;
+
+        // Show or hide fields based on selections
+        if (selectedEvent) {
+            // If an event is selected, hide flight and accommodation
+            flightContainer.style.display = 'none';
+            accommodationContainer.style.display = 'none';
+            numberOfTravelersContainer.style.display = 'none'; // Hide number of travelers
+            passportFieldsContainer.innerHTML = ''; // Clear passport fields
+            passportFieldsContainer.style.display = 'none'; // Hide passport fields
+        } else if (selectedAccommodation && selectedFlight ) {
+            // If accommodation is selected, hide event
+            eventContainer.style.display = 'none'; // Hide event
+            numberOfTravelersContainer.style.display = 'block'; // Show number of travelers
+        }else if (selectedFlight ) {
+            // If accommodation is selected, hide event
+            accommodationContainer.style.display = 'block';
+            eventContainer.style.display = 'none'; // Hide event
+            numberOfTravelersContainer.style.display = 'block'; // Show number of travelers
+        }else if (!selectedFlight && !selectedAccommodation) {
+            // If neither flight nor accommodation is selected, show event
+            eventContainer.style.display = 'block'; // Show event
+            numberOfTravelersContainer.style.display = 'none'; // Show number of travelers
+        }else if (!selectedFlight && selectedAccommodation) {
+            // If neither flight nor accommodation is selected, show event
+            eventContainer.style.display = 'none'; // Show event
+            numberOfTravelersContainer.style.display = 'block'; // Show number of travelers
+        }else {
+            // If neither is selected, show both event and number of travelers
+            numberOfTravelersContainer.style.display = 'block'; // Show number of travelers if no event selected
+            flightContainer.style.display = 'block';
+            accommodationContainer.style.display = 'block';
+        }
+    }
+
+    function updatePassportFields() {
+        const numberOfTravelers = document.getElementById('number_of_travelers').value;
+        const passportFieldsContainer = document.getElementById('passport-fields');
+        passportFieldsContainer.innerHTML = ''; // Clear existing fields
+
+        for (let i = 0; i < numberOfTravelers; i++) {
+            passportFieldsContainer.innerHTML += `
+                <div class="mb-3">
+                    <label for="passport_number_${i}" class="form-label">Passport Number for Traveler ${i + 1}</label>
+                    <input type="text" id="passport_number_${i}" name="passport_number_${i}" class="form-control" required>
+                    <div class="invalid-feedback">Please enter passport number for Traveler ${i + 1}.</div>
+                </div>`;
+        }
+
+        passportFieldsContainer.style.display = numberOfTravelers > 0 ? 'block' : 'none'; // Show or hide passport fields
+    }
+</script>
 </body>
 
 </html>

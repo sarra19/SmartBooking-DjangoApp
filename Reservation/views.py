@@ -77,7 +77,6 @@ class AddReservationView(CreateView):
     success_url = reverse_lazy('reservation:Rsv')  
 
     def form_valid(self, form):
-        # Extract passport numbers from the request
         passport_numbers = self.request.POST.getlist('passport_numbers[]')
         reservation = form.save(commit=False)
         reservation.passport_numbers = passport_numbers  # Assuming you have a field for this in your model
@@ -104,6 +103,9 @@ class UpdateReservationView(UpdateView):
         messages.success(self.request, "Flight reservation updated successfully!")
         return super().form_valid(form)
 
+    def form_invalid(self, form):
+        messages.error(self.request, "There was an error updating the reservation. Please check the details and try again.")
+        return super().form_invalid(form)
 
 
 # Displays the details of a specific reservation
@@ -160,21 +162,25 @@ class AddRsvfront(CreateView):
     success_url = reverse_lazy('reservation:myreservation', args=[1])
 
     def form_valid(self, form):
-        flight_id = self.kwargs['pk']  # Flight ID
+        flight_id = self.kwargs.get('pk') 
         accommodation_id = self.kwargs.get('ak')  
-        
-        reservation = form.save(commit=False)
-        
-        flight_id = None if flight_id == 0 else flight_id
-        accommodation_id = None if accommodation_id == 0 else accommodation_id
+        passport_numbers = self.request.POST.getlist('passport_numbers[]')
 
-        reservation.id_flight_id = flight_id
-        reservation.id_accommodation_id = accommodation_id 
+        reservation = form.save(commit=False)
+
+        reservation.id_flight_id = flight_id 
+        reservation.id_accommodation_id = accommodation_id if accommodation_id and accommodation_id != '0' else None
+        reservation.passport_numbers = passport_numbers if passport_numbers and passport_numbers != '0' else None
+
         
         reservation.save()
-
+        
         messages.success(self.request, "Reservation added successfully!")
         return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, "Please correct the errors below.")
+        return super().form_invalid(form)
 
 # Displays a list of reservations for a specific user, paginated
 class my_reservations(ListView):
@@ -184,9 +190,43 @@ class my_reservations(ListView):
     paginate_by = 6
 
     def get_queryset(self):
+        # Retrieve user-specific reservations
         pk = self.kwargs.get('pk')
-        
-        return Reservation.objects.filter(user_id=pk).order_by('created_at')
+        queryset = Reservation.objects.filter(user_id=pk)
+
+        # Filtering by search query
+        search_query = self.request.GET.get('search_query', '')
+        if search_query:
+            queryset = queryset.filter(
+                name_reservation__icontains=search_query
+            ) | queryset.filter(
+                cin__icontains=search_query
+            ) | queryset.filter(
+                id_flight__id__icontains=search_query  
+            ) | queryset.filter(
+                id_accommodation__id__icontains=search_query  
+            ) | queryset.filter(
+                special_requests__icontains=search_query
+            ) | queryset.filter(
+                phone_number__icontains=search_query 
+            ) | queryset.filter(
+                passport_numbers__icontains=search_query  # Updated to use __icontains
+            )
+
+        # Filtering by reservation status
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+
+        # Sorting by specified field, defaulting to 'created_at'
+        sort_field = self.request.GET.get('sort', 'created_at')
+        valid_sort_fields = ['name_reservation', 'cin', 'phone_number', 'created_at']
+        if sort_field in valid_sort_fields:
+            queryset = queryset.order_by(sort_field)
+        else:
+            queryset = queryset.order_by('created_at')
+
+        return queryset
 
 # Deletes a reservation for the front-end user view
 class delete_freservation(DeleteView):
@@ -206,25 +246,30 @@ class RsvEventFront(ListView):
         events = Event.objects.all().order_by('id')
         return events
 
+
 class AddRsvEventfront(CreateView):
     model = Reservation
     template_name = 'frontOffice/pages/Reservation/addREvent.html'
     form_class = ReservationForm
-    success_url = reverse_lazy('reservation:myreservation', args=[1])
+    success_url = reverse_lazy('reservation:myreservation', args=[1])  # Adjust as needed
 
     def form_valid(self, form):
-        event_id = self.kwargs['ek']  # Flight ID
+        event_id = self.kwargs['ek']  # Event ID from the URL
         reservation = form.save(commit=False)
-
-        
-       
-        reservation.id_event_id= event_id
+        reservation.id_event = get_object_or_404(Event, id=event_id)  # Link to the event using the event ID
         reservation.save()
 
-        messages.success(self.request, "Reservation added successfully!")
+        messages.success(self.request, "Reservation added successfully!")  # Success message
         return super().form_valid(form)
 
+   
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        event_id = self.kwargs['ek']
+        context['event'] = get_object_or_404(Event, id=event_id)  # Pass the event object to the template
+        return context
+        
 def accept_reservation(request, id):
     reservation = get_object_or_404(Reservation, id=id)
     

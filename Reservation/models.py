@@ -23,14 +23,12 @@ class Reservation(models.Model):
     
     # New status field
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)  
     updated_at = models.DateTimeField(auto_now=True)  
-    number_of_travelers = models.PositiveIntegerField(default=1)
+    number_of_travelers = models.PositiveIntegerField(default=1, blank=True, null=True)
+    passport_numbers = models.JSONField(default=list, blank=True, null=True)  # Allow NULL values
 
-    # Field to store a list of passport numbers
-    passport_numbers = models.JSONField(default=list, blank=True)  # Using JSONField to store the list
 
     def __str__(self):
         return f"Reservation: {self.name_reservation} on {self.created_at.strftime('%Y-%m-%d %H:%M:%S')}, Status: {self.get_status_display()}"
