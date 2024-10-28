@@ -60,6 +60,7 @@ def about(request, *args, **kwargs):
 def p404(request, *args, **kwargs):
     return render(request , 'frontOffice/404.html')
 
+
 ####################################################################################
 
 # Back-Office

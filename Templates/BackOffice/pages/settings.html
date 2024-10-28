@@ -119,7 +119,7 @@
 
                   </div>
                     <form method="POST" action="{% url 'back:settings' %}">
-                      {% csrf_token %}  <!-- Ajoutez ce token CSRF pour la sécurité -->
+                      {% csrf_token %} 
                       <div class="mb-3 row">
                           <label for="username" class="col-sm-4 col-form-label">Username</label>
                           <div class="col-md-8 col-12">
@@ -138,8 +138,10 @@
                       </div> -->
                   
                       <div class="mb-3 row">
-                          <label for="location" class="col-sm-4 col-form-label">Location</label>
-                            <input type="text" class="form-control" placeholder="Username" id="username" name="username" value="{{ username }}" required>
+                        <label for="location" class="col-sm-4 col-form-label">Location</label>
+                        <div class="col-md-8 col-12">
+                            <input type="text" class="form-control" placeholder="location" id="location" name="location" value="{{ location }}" required>
+                        </div>
                       </div>
                       <button type="submit" class="btn btn-primary">Save Changes</button>
                   </form>

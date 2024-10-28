@@ -1,8 +1,6 @@
 from django.urls import path
 from django.contrib.auth.views import LogoutView
 from .views import *
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
     path('register/', register, name="register"),
@@ -14,9 +12,6 @@ urlpatterns = [
     path('delete/<str:pk>/', PersonDeleteView.as_view(), name='delete_person'),
     path('settings/', settings_view, name='settings_view'),
     path('remove-avatar/', remove_avatar, name='remove_avatar'),
-
+    path('settingsProfile/', settingsProfile, name='settingsProfile'),
 
 ] 
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
