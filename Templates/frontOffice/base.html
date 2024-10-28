@@ -54,61 +54,77 @@
                 </div>
                 <div class="col-lg-4 text-center text-lg-end">
                     <div class="d-inline-flex align-items-center" style="height: 45px;">
-                        <a href="#"><small class="me-3 text-light"><i class="fa fa-user me-2"></i>Register</small></a>
-                        <a href="#"><small class="me-3 text-light"><i class="fa fa-sign-in-alt me-2"></i>Login</small></a>
-                        <div class="dropdown">
-                            <a href="#" class="dropdown-toggle text-light" data-bs-toggle="dropdown"><small><i class="fa fa-home me-2"></i> My Dashboard</small></a>
-                            <div class="dropdown-menu rounded">
-                                <a href="{% url 'back:home' %}" class="dropdown-item"><i class="fas fa-user-alt me-2"></i> My Dashboard</a>
-                                <a href="#" class="dropdown-item"><i class="fas fa-user-alt me-2"></i> My Profile</a>
-                                <a href="#" class="dropdown-item"><i class="fas fa-comment-alt me-2"></i> Inbox</a>
-                                <a href="#" class="dropdown-item"><i class="fas fa-bell me-2"></i> Notifications</a>
-                                <a href="#" class="dropdown-item"><i class="fas fa-cog me-2"></i> Account Settings</a>
-                                <a href="#" class="dropdown-item"><i class="fas fa-power-off me-2"></i> Log Out</a>
+                        {% if user.is_authenticated %}
+                            <div class="dropdown">
+                                    <a href="#" class="dropdown-toggle text-light d-flex align-items-center" data-bs-toggle="dropdown">
+                                        <div class="rounded-circle overflow-hidden" style="width: 35px; height: 35px; border: 2px solid #fff; margin-right: 10px;">
+                                            {% if user.profile.image %}
+                                            <img src="{{ user.profile.image.url }}" alt="User Image" class="img-fluid" style="width: 100%; height: auto;">
+                                            {% else %}
+                                                <img src="{% static 'frontOffice/img/anonyme.avif' %}" alt="Default Image" class="img-fluid" style="width: 100%; height: auto;">
+                                            {% endif %}                                   
+                                        </div>
+                                        <small>{{ user }}</small> 
+                                    </a>                            
+                                    <div class="dropdown-menu rounded">
+                                        {% if user.is_superuser %}
+                                            <a href="{% url 'back:home' %}" class="dropdown-item"><i class="fa fa-home me-2"></i> My Dashboard</a>
+                                        {% endif %}
+                                        <a href="#" class="dropdown-item"><i class="fas fa-user-alt me-2"></i> My Profile</a>
+                                        <a href="#" class="dropdown-item"><i class="fas fa-cog me-2"></i> Account Settings</a>
+                                        <a href="{% url 'front:logout' %}" class="dropdown-item"><i class="fas fa-power-off me-2"></i> Log Out</a>
+                                    </div>
                             </div>
-                        </div>
+                        {% else %}
+                            <a href="{% url 'front:register' %}"><small class="me-3 text-light"><i class="fa fa-user me-2"></i>Register</small></a>
+                            <a href="{% url 'front:login' %}"><small class="me-3 text-light"><i class="fa fa-sign-in-alt me-2"></i>Login</small></a>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>
         </div>
         <!-- Topbar End -->
-
+        
         <!-- Navbar & Hero Start -->
-        <div class="container-fluid position-relative p-0">
-            <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
-                <a href="" class="navbar-brand p-0">
-                    <img src="{% static 'backOffice/assets/images/brand/logo/logo.png' %}" alt="Smart Booking Logo" class="img-fluid"  style="max-height: 80px; width: auto;">
-                </a>
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                    <span class="fa fa-bars"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto py-0">
-                        <a href="{% url 'front:indexF' %}" class="nav-item nav-link">Home</a>
-                        <a href="{% url 'front:about' %}" class="nav-item nav-link active">About</a>
-                        <a href="{% url 'front:services' %}" class="nav-item nav-link">flights</a>
-                        <a href="{% url 'front:packages' %}" class="nav-item nav-link">transports</a>
-                        <a href="{% url 'front:blog' %}" class="nav-item nav-link">Accommodations</a>
-                        <a href="{% url 'front:gallery' %}" class="nav-item nav-link">Events</a>
-
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                            <div class="dropdown-menu m-0">
-                                <a href="{% url 'front:destination' %}" class="dropdown-item">Destination</a>
-                                <a href="{% url 'front:tour' %}" class="dropdown-item">Explore Tour</a>
-                                <a href="{% url 'front:booking' %}" class="dropdown-item">Travel Booking</a>
-                                <a href="{% url 'front:guides' %}" class="dropdown-item">Travel Guides</a>
-                                <a href="{% url 'front:testimonial' %}" class="dropdown-item">Testimonial</a>
-                                <a href="{% url 'front:404' %}"class="dropdown-item">404 Page</a>
+        {% if user.is_authenticated %}
+            <div class="container-fluid position-relative p-0">
+                <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
+                    <a href="" class="navbar-brand p-0">
+                        <img src="{% static 'backOffice/assets/images/brand/logo/logo.png' %}" alt="Smart Booking Logo" class="img-fluid"  style="max-height: 80px; width: auto;">
+                    </a>
+                    
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                        <span class="fa fa-bars"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <div class="navbar-nav ms-auto py-0">
+                            <a href="{% url 'front:indexF' %}" class="nav-item nav-link">Home</a>
+                            <a href="{% url 'front:about' %}" class="nav-item nav-link active">About</a>
+                        
+                                <a href="{% url 'front:services' %}" class="nav-item nav-link">flights</a>
+                                <a href="{% url 'front:packages' %}" class="nav-item nav-link">transports</a>
+                                <a href="{% url 'front:blog' %}" class="nav-item nav-link">Accommodations</a>
+                                <a href="{% url 'front:gallery' %}" class="nav-item nav-link">Events</a>
+                            
+                            <div class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                                <div class="dropdown-menu m-0">
+                                    <a href="{% url 'front:destination' %}" class="dropdown-item">Destination</a>
+                                    <a href="{% url 'front:tour' %}" class="dropdown-item">Explore Tour</a>
+                                    <a href="{% url 'front:booking' %}" class="dropdown-item">Travel Booking</a>
+                                    <a href="{% url 'front:guides' %}" class="dropdown-item">Travel Guides</a>
+                                    <a href="{% url 'front:testimonial' %}" class="dropdown-item">Testimonial</a>
+                                    <a href="{% url 'front:404' %}"class="dropdown-item">404 Page</a>
+                                </div>
                             </div>
+                            <a href="{% url 'front:contact' %}" class="nav-item nav-link">Contact</a>
                         </div>
-                        <a href="{% url 'front:contact' %}" class="nav-item nav-link">Contact</a>
+                        <a href="" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4">Book Now</a>
                     </div>
-                    <a href="" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4">Book Now</a>
-                </div>
-            </nav>
-        </div>
+                </nav>
+            </div>
+        {% endif %}
         <!-- Navbar & Hero End -->
 
 

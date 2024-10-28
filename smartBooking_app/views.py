@@ -1,46 +1,62 @@
-from django.shortcuts import render
+from django.shortcuts import render , redirect
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Front-Office
 
 def indexF(request, *args, **kwargs):
     return render(request , 'frontOffice/index.html')
 
+@login_required
 def tour(request, *args, **kwargs):
     return render(request , 'frontOffice/tour.html')
 
+@login_required
 def testimonial(request, *args, **kwargs):
     return render(request , 'frontOffice/testimonial.html')
 
+@login_required
 def services(request, *args, **kwargs):
     return render(request , 'frontOffice/services.html')
 
+@login_required
 def packages(request, *args, **kwargs):
     return render(request , 'frontOffice/packages.html')
 
+@login_required
 def guides(request, *args, **kwargs):
     return render(request , 'frontOffice/guides.html')
 
+@login_required
 def gallery(request, *args, **kwargs):
     return render(request , 'frontOffice/gallery.html')
 
+@login_required
 def destination(request, *args, **kwargs):
     return render(request , 'frontOffice/destination.html')
 
+@login_required
 def contact(request, *args, **kwargs):
     return render(request , 'frontOffice/contact.html')
 
+@login_required
 def booking(request, *args, **kwargs):
     return render(request , 'frontOffice/booking.html')
 
+@login_required
 def blog(request, *args, **kwargs):
     return render(request , 'frontOffice/blog.html')
 
+@login_required
 def base(request, *args, **kwargs):
     return render(request , 'frontOffice/base.html')
 
+@login_required
 def about(request, *args, **kwargs):
     return render(request , 'frontOffice/about.html')
 
+@login_required
 def p404(request, *args, **kwargs):
     return render(request , 'frontOffice/404.html')
 
@@ -209,3 +225,4 @@ def typography(request, *args, **kwargs):
 
 def vertical_rule(request, *args, **kwargs):
     return render(request, 'backOffice/docs/vertical-rule.html')
+

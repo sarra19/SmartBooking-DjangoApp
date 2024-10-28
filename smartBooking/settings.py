@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'Event',
     'RentalTransport',
     'Accommodation',
-    'Reservation'
+    'Reservation',
+    'Person'
 ]
 
 MIDDLEWARE = [
@@ -52,7 +53,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+    'smartBooking_app.middleware.AdminAccessMiddleware'
+]   
 
 ROOT_URLCONF = 'smartBooking.urls'
 
@@ -124,8 +126,16 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = "static",
 
+MEDIA_URL='/media/'
+
+MEDIA_ROOT = 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL="Person.Person"
+
+LOGIN_URL = '/login/'  # URL pour la connexion
+LOGOUT_REDIRECT_URL = '/'  # URL vers laquelle rediriger après déconnexion

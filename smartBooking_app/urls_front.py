@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path , include
 from . import views 
 
 app_name = 'front'
@@ -19,6 +19,7 @@ urlpatterns = [
     path('base/' , views.base , name='base'),
     path('about/' , views.about , name='about'),
     path('404/' , views.p404 , name='404'),
+    path('user/' , include('Person.urls')) , 
     
     
 

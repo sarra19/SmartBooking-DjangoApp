@@ -1,0 +1,73 @@
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'BackOffice/partials/head.html' %} <!-- Corrected include syntax -->
+    <title>Homepage | Dash Ui - Bootstrap 5 Admin Dashboard Template</title>
+</head>
+
+<body class="bg-light">
+    <div id="db-wrapper">
+        <!-- navbar vertical -->
+        {% include 'BackOffice/partials/navbar-vertical.html' with page="dashboard" %} <!-- Adjusted for Django -->
+        <!-- Page content -->
+        <div id="page-content">
+            {% include 'BackOffice/partials/header.html' %} <!-- Adjusted for Django -->
+            <!-- Container fluid -->
+            <div class="bg-primary pt-10 pb-21"></div>
+                <div class="container-fluid mt-n22 px-6"> <!-- Adjusted for Django -->
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-12">
+                            <!-- Page header -->
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="mb-2 mb-lg-0">
+                                        <h3 class="mb-0  text-white">Users</h3>
+                                    </div>
+                                    <div>
+                                        <a  href="{% url 'back:create_person' %}" class="btn btn-white">Add New Person</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Container fluid -->
+                    <div class="row mt-6">
+                        <div class="col-md-12 col-12">
+                            <!-- card  -->
+                            <div class="card">
+                                <!-- card header  -->
+                                <div class="container mt-5">
+                                    <h2>confirm deletion</h2>
+                                    <p>Are you sure you want to delete {{ person.username }} ?</p>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger"> Yes, delete</button>
+                                        <a href="{% url 'back:list_persons' %}" class="btn btn-secondary">Annuler</a>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                              
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Scripts -->
+    @include("partials/scripts.html")
+
+
+
+</body>
+
+</html>
+
+

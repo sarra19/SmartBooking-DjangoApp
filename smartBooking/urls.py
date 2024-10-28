@@ -16,13 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path , include
-from smartBooking_app.views import signin  # Assurez-vous d'importer la vue home
+from smartBooking_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path ('front/' , include('smartBooking_app.urls_front', namespace='front')),
     path ('back/' , include('smartBooking_app.urls_back', namespace='back')),
-    path('', signin, name='signin'),  # Ajoutez cette ligne pour rediriger vers la vue home
+    path('', views.indexF, name='indexF'),  
+
+    #### sign in back ######
+    # path('login/', views.signin, name='signin'),  
+    # path('home/', views.home, name='home'),
+
 
 
 ]

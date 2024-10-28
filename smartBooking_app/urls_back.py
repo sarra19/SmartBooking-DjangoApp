@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path , include
 from . import views
 
 app_name = 'back'
@@ -17,9 +17,11 @@ urlpatterns = [
     path('docs/', views.docs, name='docs'),
     path('faq/', views.faq, name='faq'),
     path('layout/', views.layout, name='layout'),
+    path('user/' , include('Person.urls')) , 
+
 # docs
     path('accordions/', views.accordions, name='accordions'),
-     path('alerts/', views.alerts, name='alerts'),
+    path('alerts/', views.alerts, name='alerts'),
     path('badge/', views.badge, name='badge'),
     path('borders/', views.borders, name='borders'),
     path('breadcrumb/', views.breadcrumb, name='breadcrumb'),
@@ -44,7 +46,7 @@ urlpatterns = [
     path('opacity/', views.opacity, name='opacity'),
     path('pagination/', views.pagination, name='pagination'),
     path('placeholders/', views.placeholders, name='placeholders'),
-      path('popovers/', views.popovers, name='popovers'),
+    path('popovers/', views.popovers, name='popovers'),
     path('progress/', views.progress, name='progress'),
     path('ratio/', views.ratio, name='ratio'),
     path('scrollspy/', views.scrollspy, name='scrollspy'),
