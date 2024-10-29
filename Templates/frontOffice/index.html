@@ -92,9 +92,10 @@
                         <a href="{% url 'front:about' %}" class="nav-item nav-link active">About</a>
                         <a href="{% url 'reservation:Rsv-flight-front' %}" class="nav-item nav-link">flights</a>
                         <a href="{% url 'front:packages' %}" class="nav-item nav-link">transports</a>
-                        <a href="{% url 'front:blog' %}" class="nav-item nav-link">Accommodations</a>
+                        <a href="{% url 'reservation:accommodationfront' %}" class="nav-item nav-link">Accommodations</a>
                         <a href="{% url 'reservation:Rsv-event-front' %}" class="nav-item nav-link">Events</a>
-                        <a href="{% url 'reservation:myreservation' 1 %}" class="nav-item nav-link">My reservations</a>
+                        <!-- //user_id -->
+                        <a href="{% url 'reservation:myreservation' 1 %}" class="nav-item nav-link">My reservations</a> 
 
                         <a href="{% url 'front:contact' %}" class="nav-item nav-link">Contact</a>
                     </div>

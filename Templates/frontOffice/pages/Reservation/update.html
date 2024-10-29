@@ -1,0 +1,179 @@
+{% extends 'frontOffice/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="text-white display-3 mb-4">My reservations</h3>
+        <ol class="breadcrumb justify-content-center mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'front:indexF' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item active text-white">My reservations</li>
+        </ol>    
+    </div>
+</div>
+
+<div class="mb-4 mt-5">
+    <div class="col-lg-8 col-md-10 col-12 mx-auto">
+        <form class="needs-validation" method="POST" novalidate onsubmit="toggleTravelerFields();">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Reservation Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+
+                        <!-- Flight Selection -->
+                        <div class="col-md-6" id="flight-container">
+                            <label for="{{ form.id_flight.id_for_label }}" class="form-label">Choose Flight</label>
+                            {{ form.id_flight }}
+                            <div class="invalid-feedback">Please select a flight.</div>
+                        </div>
+
+                        <!-- Accommodation Selection -->
+                        <div class="col-md-6" id="accommodation-container">
+                            <label for="{{ form.id_accommodation.id_for_label }}" class="form-label">Choose Accommodation</label>
+                            {{ form.id_accommodation }}
+                            <div class="invalid-feedback">Please select accommodation.</div>
+                        </div>
+
+                        <!-- Reservation Name -->
+                        <div class="col-md-6">
+                            <label for="{{ form.name_reservation.id_for_label }}" class="form-label">Reservation Name</label>
+                            {{ form.name_reservation }}
+                            <div class="invalid-feedback">Please enter a reservation name.</div>
+                        </div>
+
+                        <!-- CIN -->
+                        <div class="col-md-6">
+                            <label for="{{ form.cin.id_for_label }}" class="form-label">CIN</label>
+                            {{ form.cin }}
+                            <div class="invalid-feedback">Please enter your CIN (8 digits).</div>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="col-md-6">
+                            <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
+                            {{ form.phone_number }}
+                            <div class="invalid-feedback">Please enter your phone number (8 digits).</div>
+                        </div>
+
+                        <!-- Special Requests -->
+                        <div class="col-12">
+                            <label for="{{ form.special_requests.id_for_label }}" class="form-label">Special Requests</label>
+                            {{ form.special_requests }}
+                        </div>
+
+                        <!-- Status Selection -->
+                        <div class="col-md-6">
+                            <label for="status" class="form-label">Status</label>
+                            {{ form.status }}
+                            <div class="invalid-feedback">Please select a reservation status.</div>
+                        </div>
+
+                        <!-- Number of Travelers -->
+                        <div class="col-md-6" id="number-of-travelers-container" style="display: block;">
+                            <label for="number_of_travelers" class="form-label">Number of Travelers</label>
+                            <input type="number" id="number_of_travelers" name="number_of_travelers" class="form-control"
+                                   placeholder="Enter number of travelers" min="1" onchange="updatePassportFields()"
+                                   value="{{ form.number_of_travelers.value }}">
+                            <div class="invalid-feedback">Please enter the number of travelers.</div>
+                        </div>
+
+                        <div class="col-12" id="passport-fields" style="display: block;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Update Reservation</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% include "backOffice/partials/scripts.html" %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+
+    const oldPassportNumbers = {{ form.passport_numbers.value|default:"[]"|safe }};
+
+    document.addEventListener("DOMContentLoaded", function () {
+        updatePassportFields(); // Display passport fields initially if travelers are preset
+        document.getElementById("number_of_travelers").addEventListener("input", updatePassportFields);
+    });
+
+    function toggleTravelerFields() {
+        const numberOfTravelersContainer = document.getElementById('number-of-travelers-container');
+        const passportFieldsContainer = document.getElementById('passport-fields');
+        const flightContainer = document.getElementById('flight-container');
+        const accommodationContainer = document.getElementById('accommodation-container');
+        const flightSelect = document.getElementById('{{ form.id_flight.id_for_label }}');
+        const accommodationSelect = document.getElementById('{{ form.id_accommodation.id_for_label }}');
+
+        const selectedFlight = flightSelect.value;
+        const selectedAccommodation = accommodationSelect.value;
+
+        if (selectedAccommodation || selectedFlight) {
+            numberOfTravelersContainer.style.display = 'block'; // Show number of travelers
+        } else {
+            numberOfTravelersContainer.style.display = 'none'; // Hide number of travelers
+            passportFieldsContainer.style.display = 'none'; // Hide passport fields
+        }
+    }
+
+    function updatePassportFields() {
+        const numberOfTravelers = parseInt(document.getElementById('number_of_travelers').value) || 0;
+        const passportFieldsContainer = document.getElementById('passport-fields');
+        passportFieldsContainer.innerHTML = ''; // Clear existing fields
+
+        for (let i = 0; i < numberOfTravelers; i++) {
+            const passportValue = oldPassportNumbers[i] ? oldPassportNumbers[i].trim() : '';
+
+            passportFieldsContainer.innerHTML += `
+                <div class="mb-3">
+                    <label for="passport_number_${i}" class="form-label">Passport Number for Traveler ${i + 1}</label>
+                    <input type="text" id="passport_number_${i}" name="passport_numbers[]" class="form-control"
+                           value="${passportValue}" required maxlength="10">
+                    <div class="invalid-feedback">Please enter passport number for Traveler ${i + 1}.</div>
+                </div>`;
+        }
+
+        passportFieldsContainer.style.display = numberOfTravelers > 0 ? 'block' : 'none';
+    }
+
+    // Call updatePassportFields on DOMContentLoaded and whenever number_of_travelers changes
+    document.addEventListener("DOMContentLoaded", function () {
+        updatePassportFields(); // Display passport fields initially if travelers are preset
+        document.getElementById("number_of_travelers").addEventListener("input", updatePassportFields);
+    });
+</script>
+
+{% endblock %}

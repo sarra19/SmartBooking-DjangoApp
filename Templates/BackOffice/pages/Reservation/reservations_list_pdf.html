@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    /* Basic styling for PDF */
+    body { font-family: Arial, sans-serif; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h2>Accommodation Reservations</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>CIN</th>
+        <th>Phone Number</th>
+        <th>Special Requests</th>
+        <th>Status</th>
+        <th>user id</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for reservation in reservations %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ reservation.name_reservation }}</td>
+        <td>{{ reservation.cin }}</td>
+        <td>{{ reservation.phone_number }}</td>
+        <td>{{ reservation.special_requests }}</td>
+        <td>{{ reservation.status|title }}</td>
+        <!-- à changer user id -->
+        <td>{{ reservation.user_id }}</td> 
+
+
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" style="text-align: center;">No reservations found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

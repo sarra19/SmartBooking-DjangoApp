@@ -15,7 +15,6 @@
         </div>
     </div>
     
-
     <div class="mb-4 mt-5">
         <form method="GET" action="" class="w-100" style="max-width: 900px; margin: auto;">
             <div class="row align-items-center justify-content-center">
@@ -82,37 +81,64 @@
                                 {% endif %}
                             </div>
                         {% else %}
-                            <!-- Flight Image -->
-                            <div class="mb-3 text-center">
-                                {% if reservation.id_flight.image %}
-                                    <img src="{% static 'backOffice/assets/images/' %}{{ reservation.id_flight.image.url }}" alt="{{ reservation.id_flight.title }}" class="img-fluid" style="max-width: 100%; height: 200px; object-fit: cover;">
-                                {% else %}
-                                    <img src="{% static 'backOffice/assets/images/flights/default_flight.jpg' %}" class="img-fluid" alt="Default Flight Image" style="max-width: 100%; height: 200px; object-fit: cover;">
-                                {% endif %}
-                                <p class="card-text mt-2"><i class="fas fa-plane"></i> Flight: <strong>{{ reservation.id_flight }}</strong></p>
-                            </div>
+                            <!-- Flight Image and Name (only if id_flight exists) -->
+                            {% if reservation.id_flight %}
+                                <div class="mb-3 text-center">
+                                    {% if reservation.id_flight.image %}
+                                        <img src="{% static 'backOffice/assets/images/' %}{{ reservation.id_flight.image.url }}" alt="{{ reservation.id_flight.title }}" class="img-fluid" style="max-width: 100%; height: 200px; object-fit: cover;">
+                                    {% else %}
+                                        <img src="{% static 'backOffice/assets/images/flights/default_flight.jpg' %}" class="img-fluid" alt="Default Flight Image" style="max-width: 100%; height: 200px; object-fit: cover;">
+                                    {% endif %}
+                                    <p class="card-text mt-2"><i class="fas fa-plane"></i> Flight: <strong>{{ reservation.id_flight }}</strong></p>
+                                </div>
+                            {% endif %}
 
                             <!-- Accommodation Image -->
-                            <div class="mb-3 text-center">
-                                {% if reservation.id_accommodation.image %}
-                                    <img src="{% static 'backOffice/assets/images/' %}{{ reservation.id_accommodation.image.url }}" alt="{{ reservation.id_accommodation.title }}" class="img-fluid" style="max-width: 100%; height: 200px; object-fit: cover;">
-                                {% else %}
-                                    <img src="{% static 'backOffice/assets/images/accommodation_images/default_accommodation.png' %}" class="img-fluid" alt="Default Accommodation Image" style="max-width: 100%; height: 200px; object-fit: cover;">
-                                {% endif %}
-                                <p class="card-text mt-2"><i class="fas fa-bed"></i> Accommodation: <strong>{{ reservation.id_accommodation }}</strong></p>
-                            </div>
+                            {% if reservation.id_accommodation %}
+                                <div class="mb-3 text-center">
+                                    {% if reservation.id_accommodation.image %}
+                                        <img src="{% static 'backOffice/assets/images/' %}{{ reservation.id_accommodation.image.url }}" alt="{{ reservation.id_accommodation.title }}" class="img-fluid" style="max-width: 100%; height: 200px; object-fit: cover;">
+                                    {% else %}
+                                        <img src="{% static 'backOffice/assets/images/accommodation_images/default_accommodation.png' %}" class="img-fluid" alt="Default Accommodation Image" style="max-width: 100%; height: 200px; object-fit: cover;">
+                                    {% endif %}
+                                    <p class="card-text mt-2"><i class="fas fa-bed"></i> Accommodation: <strong>{{ reservation.id_accommodation }}</strong></p>
+                                </div>
+                            {% endif %}
+                            
                             <p class="card-text">Number of Travelers: <strong>{{ reservation.number_of_travelers }}</strong></p>
                             <p class="card-text">Passport Numbers: <strong>{{ reservation.passport_numbers|join:", " }}</strong></p>
                         {% endif %}
+   <!-- User Name and Status -->
+   <div class="mb-3">
+    <strong>User Name:</strong>
+    <span class="text-muted">
+        {{ reservation.user.username|default:"Username" }}
+    </span>
+  </div>
+  <div class="mb-3">
+    <strong>Status:</strong> 
+    <span class="{% if reservation.status == 'pending' %}text-danger{% elif reservation.status == 'accepted' %}text-success{% endif %}">
+      {{ reservation.status|title }}
+    </span>
+  </div>
 
                         <p class="card-text">CIN: <strong>{{ reservation.cin }}</strong></p>
                         <p class="card-text">Phone Number: <strong>{{ reservation.phone_number }}</strong></p>
                         <p class="card-text">Special Requests: {{ reservation.special_requests }}</p>
                        
-                        <div class="mt-auto">
+                        <div class="mt-auto d-flex justify-content-between">
                             <a href="{% url 'reservation:delete-freservation' reservation.id %}" class="btn btn-danger mt-2" style="transition: background-color 0.3s;">
                                 <i class="fas fa-trash"></i> Delete
                             </a>
+                            {% if reservation.id_event %}
+      <a href="{% url 'reservation:update_reservationEf' reservation.id %}" class="btn btn-warning">
+        <i data-feather="edit" class="icon-xxs"></i> Edit Event Reservation
+      </a>
+    {% else %}
+      <a href="{% url 'reservation:update_reservationf' reservation.id %}" class="btn btn-warning">
+        <i data-feather="edit" class="icon-xxs"></i> Edit Reservation
+      </a>
+    {% endif %}
                         </div>
                     </div>
                 </div>
@@ -125,7 +151,6 @@
     </div>
 </div>
 <!-- Reservation Form End -->
-
 
     <div class="pagination-container mt-4">
         <nav aria-label="Page navigation">
@@ -142,11 +167,7 @@
                         </a>
                     </li>
                 {% endif %}
-                {% for num in page_obj.paginator.page_range %}
-                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
-                        <a class="page-link" href="?page={{ num }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}">{{ num }}</a>
-                    </li>
-                {% endfor %}
+                <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</a></li>
                 {% if page_obj.has_next %}
                     <li class="page-item">
                         <a class="page-link" href="?page={{ page_obj.next_page_number }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}" aria-label="Next">
@@ -162,5 +183,4 @@
             </ul>
         </nav>
     </div>
-
 {% endblock %}

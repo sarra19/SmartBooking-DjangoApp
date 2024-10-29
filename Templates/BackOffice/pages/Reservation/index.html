@@ -6,12 +6,12 @@
   {% include 'backOffice/partials/head.html' %}
   <link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM4c5VJ1qQ4eE2jI2M6f4k99d9+U3p1m6pY2jH" crossorigin="anonymous">
-  <title>Accommodation Reservations</title>
+  <title>Reservations</title>
 </head>
 
 <body class="bg-light">
   <div id="db-wrapper">
-    {% include 'backOffice/partials/navbar-vertical.html' with page="Accommodation Reservations" page_group="reservations" subpage="accommodation" %}
+    {% include 'backOffice/partials/navbar-vertical.html' with page="Reservations" page_group="reservations" subpage="accommodation" %}
     
     <div id="page-content">
       {% include 'backOffice/partials/header.html' %}
@@ -26,7 +26,11 @@
                 <i data-feather="plus"></i> Add Reservation
               </a>
             </div>
-            
+            <div class="mb-3 text-end">
+              <a href="{% url 'reservation:reservations_pdf' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-file-pdf"></i> Download PDF
+              </a>
+            </div>
             <!-- Sub Navigation Bar -->
             <nav class="mb-4">
               <ul class="nav nav-pills">
@@ -96,15 +100,15 @@
                       <span>Pending</span> <!-- Default for pending -->
                     {% endif %}
                   </td>
-                  <td class="d-flex ms-2">
-                    <a href="{% url 'reservation:details_reservation' reservation.id %}" class="btn btn-primary me-2">
+                  <td class="d-flex ms-2 ">
+                    <a href="{% url 'reservation:details_reservation' reservation.id %}" class="btn btn-primary btn-sm me-2">
                         <i data-feather="eye" class="icon-xxs"></i> View details
                     </a>
                     {% if reservation.status == 'pending' %}
-                    <a href="{% url 'reservation:accept_reservation' reservation.id %}" class="btn btn-success me-2">
+                    <a href="{% url 'reservation:accept_reservation' reservation.id %}" class="btn btn-success btn-sm me-2">
                         <i data-feather="check" class="icon-xxs"></i> Accept
                     </a>
-                    <a href="{% url 'reservation:reject_reservation' reservation.id %}" class="btn btn-danger">
+                    <a href="{% url 'reservation:reject_reservation' reservation.id %}" class="btn btn-danger btn-sm">
                         <i data-feather="x" class="icon-xxs"></i> Reject
                     </a>
                     {% endif %}

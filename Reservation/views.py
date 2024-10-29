@@ -9,6 +9,70 @@ from django.views.generic import *
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from Event.models import Event 
+from django.views.decorators.csrf import csrf_exempt
+from xhtml2pdf import pisa
+from django.http import HttpResponse
+from django.template.loader import get_template
+
+import json
+import requests
+from django.http import JsonResponse
+from django.conf import settings
+import requests
+import os
+import google.generativeai as genai
+
+
+import re
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+
+genai.configure(api_key=GOOGLE_API_KEY)
+
+@csrf_exempt  # Use CSRF exemption for simplicity; adjust as needed
+def generate_reservinfo(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        prompt = data.get('prompt', '')
+        
+        reservinfo = ai_generate_reservinfo(prompt)
+        
+        return JsonResponse(reservinfo)
+        
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def ai_generate_reservinfo(prompt):
+    if not isinstance(prompt, str) or not prompt.strip():
+        return {'text': 'Error', 'message': 'Invalid input: prompt is required and must be a string.'}
+
+    # Regular expressions to extract reservation details without commas
+    name_reservation = re.search(r"my name is\s*([\w\s]+)", prompt, re.IGNORECASE)
+    cin = re.search(r"my CIN is\s*(\d+)", prompt, re.IGNORECASE)
+    phone_number = re.search(r"my phone number is\s*(\d+)", prompt, re.IGNORECASE)
+    special_requests = re.search(r"special request\s*:\s*(.+)", prompt, re.IGNORECASE)
+
+    reservation_data = {
+        'name_reservation': name_reservation.group(1) if name_reservation else 'Unknown',
+        'cin': cin.group(1) if cin else 'Unknown',
+        'phone_number': phone_number.group(1) if phone_number else 'Unknown',
+        'special_requests': special_requests.group(1) if special_requests else 'None'
+    }
+
+    return {
+        'text': 'Reservation generated.',
+        'message': 'Reservation successfully added.',
+        'reservinfo': "Reservation Info Generated",  # Placeholder for any generated info
+        'reservation_details': reservation_data
+    }
+
+class RsvEventFront(ListView):
+    model = Event  #
+    context_object_name = "events"  
+    template_name = 'frontOffice/pages/Event/index.html'  
+    
+    def get_queryset(self):
+        # Fetch and order all events by ID
+        events = Event.objects.all().order_by('id')
+        return events
 
 # Displays a paginated list of reservations with search and sort options
 class Rsv(ListView):
@@ -79,6 +143,8 @@ class AddReservationView(CreateView):
     def form_valid(self, form):
         passport_numbers = self.request.POST.getlist('passport_numbers[]')
         reservation = form.save(commit=False)
+        reservation.status = self.request.POST.get('status', 'pending') or 'pending'
+
         reservation.passport_numbers = passport_numbers  # Assuming you have a field for this in your model
         reservation.save()
         messages.success(self.request, "Reservation added successfully!")
@@ -96,10 +162,22 @@ class delete_reservation(DeleteView):
 class UpdateReservationView(UpdateView):
     model = Reservation
     template_name = 'backOffice/pages/Reservation/update.html'
-    form_class=ReservationForm
+    form_class = ReservationForm
+    success_url = reverse_lazy("reservation:Rsv")
 
-    success_url=reverse_lazy("reservation:Rsv")
     def form_valid(self, form):
+        # First, save the reservation instance but don't commit yet
+        reservation = form.save(commit=False)
+
+        # Process passport numbers from the request
+        passport_numbers = self.request.POST.getlist('passport_numbers[]')
+
+        # Update the passport_numbers field with the new list
+        reservation.passport_numbers = passport_numbers  # Save the list directly
+
+        # Now save the reservation
+        reservation.save()
+
         messages.success(self.request, "Flight reservation updated successfully!")
         return super().form_valid(form)
 
@@ -107,6 +185,85 @@ class UpdateReservationView(UpdateView):
         messages.error(self.request, "There was an error updating the reservation. Please check the details and try again.")
         return super().form_invalid(form)
 
+class UpdateReservationfView(UpdateView):
+    model = Reservation
+    template_name = 'frontOffice/pages/Reservation/update.html'
+    form_class = ReservationForm
+    #userid
+    success_url = reverse_lazy('reservation:myreservation', args=[1]) 
+
+    def form_valid(self, form):
+        # First, save the reservation instance but don't commit yet
+        reservation = form.save(commit=False)
+
+        # Process passport numbers from the request
+        passport_numbers = self.request.POST.getlist('passport_numbers[]')
+
+        # Update the passport_numbers field with the new list
+        reservation.passport_numbers = passport_numbers  # Save the list directly
+
+        # Now save the reservation
+        reservation.save()
+
+        messages.success(self.request, "Flight reservation updated successfully!")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "There was an error updating the reservation. Please check the details and try again.")
+        return super().form_invalid(form)
+
+
+class UpdateReservationEventView(UpdateView):
+    model = Reservation
+    template_name = 'backOffice/pages/Reservation/updateEvent.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy("reservation:Rsv")
+
+    def form_valid(self, form):
+        # First, save the reservation instance but don't commit yet
+        reservation = form.save(commit=False)
+
+        # Process passport numbers from the request
+        passport_numbers = self.request.POST.getlist('passport_numbers[]')
+
+        # Update the passport_numbers field with the new list
+        reservation.passport_numbers = passport_numbers  # Save the list directly
+
+        # Now save the reservation
+        reservation.save()
+
+        messages.success(self.request, "Flight reservation updated successfully!")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "There was an error updating the reservation. Please check the details and try again.")
+        return super().form_invalid(form)
+
+class UpdateReservationEventfView(UpdateView):
+    model = Reservation
+    template_name = 'frontOffice/pages/Reservation/updateEventf.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy('reservation:myreservation', args=[1])
+
+    def form_valid(self, form):
+        # First, save the reservation instance but don't commit yet
+        reservation = form.save(commit=False)
+
+        # Process passport numbers from the request
+        passport_numbers = self.request.POST.getlist('passport_numbers[]')
+
+        # Update the passport_numbers field with the new list
+        reservation.passport_numbers = passport_numbers  # Save the list directly
+
+        # Now save the reservation
+        reservation.save()
+
+        messages.success(self.request, "Flight reservation updated successfully!")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "There was an error updating the reservation. Please check the details and try again.")
+        return super().form_invalid(form)
 
 # Displays the details of a specific reservation
 def detailsReservation(request, pk):
@@ -236,30 +393,22 @@ class delete_freservation(DeleteView):
     success_url = reverse_lazy('reservation:myreservation', args=[1])
 
 
-class RsvEventFront(ListView):
-    model = Event  #
-    context_object_name = "events"  
-    template_name = 'frontOffice/pages/Event/index.html'  
-    
-    def get_queryset(self):
-        # Fetch and order all events by ID
-        events = Event.objects.all().order_by('id')
-        return events
 
 
 class AddRsvEventfront(CreateView):
     model = Reservation
     template_name = 'frontOffice/pages/Reservation/addREvent.html'
     form_class = ReservationForm
-    success_url = reverse_lazy('reservation:myreservation', args=[1])  # Adjust as needed
+    #userid
+    success_url = reverse_lazy('reservation:myreservation', args=[1])  #userid
 
     def form_valid(self, form):
-        event_id = self.kwargs['ek']  # Event ID from the URL
+        event_id = self.kwargs['ek']  
         reservation = form.save(commit=False)
-        reservation.id_event = get_object_or_404(Event, id=event_id)  # Link to the event using the event ID
+        reservation.id_event = get_object_or_404(Event, id=event_id) 
         reservation.save()
 
-        messages.success(self.request, "Reservation added successfully!")  # Success message
+        messages.success(self.request, "Reservation added successfully!")  
         return super().form_valid(form)
 
    
@@ -267,32 +416,88 @@ class AddRsvEventfront(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         event_id = self.kwargs['ek']
-        context['event'] = get_object_or_404(Event, id=event_id)  # Pass the event object to the template
+        context['event'] = get_object_or_404(Event, id=event_id)  
         return context
+    
+
+
         
 def accept_reservation(request, id):
     reservation = get_object_or_404(Reservation, id=id)
     
-    # Accept the reservation
     reservation.status = 'accepted'
     
-    # Check if there is an associated accommodation
     if reservation.id_accommodation:
-        accommodation = reservation.id_accommodation  # Get the accommodation object
-        accommodation_id = accommodation.id  # Store the accommodation ID for messages
-        # Delete the associated accommodation
-        accommodation.delete()  # This deletes the accommodation object
-        reservation.id_accommodation = None  # Clear the reference to the deleted accommodation
+        accommodation = reservation.id_accommodation  
+        accommodation_id = accommodation.id  
+
+        accommodation.delete()  
+        reservation.id_accommodation = None 
         messages.success(request, f'Accommodation with ID {accommodation_id} has been deleted.')
 
-    # Save the changes to the reservation
     reservation.save()
     messages.success(request, 'Reservation accepted successfully.')
-    return redirect('reservation:Rsv')  # Redirect to the reservations list
+    return redirect('reservation:Rsv')  
 
 def reject_reservation(request, id):
     reservation = get_object_or_404(Reservation, id=id)
     reservation.status = 'rejected'
     reservation.save()
     messages.success(request, 'Reservation rejected successfully.')
-    return redirect('reservation:Rsv')  # Redirect to the reservations lis
+    return redirect('reservation:Rsv') 
+
+
+class RsvAccommodationFront(ListView):
+    model=Accommodation
+    context_object_name="accommodations"
+    
+    template_name='frontOffice/pages/Accommodation/indexAll.html'
+    
+    def get_queryset(self):
+        
+        accommodations = Accommodation.objects.all().order_by('id')
+        
+        return accommodations
+    
+
+class AddRsvfrontAcc(CreateView):
+    model = Reservation
+    template_name = 'frontOffice/pages/Reservation/add.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy('reservation:myreservation', args=[1])
+
+    def form_valid(self, form):
+        accommodation_id = self.kwargs.get('ack')  
+        passport_numbers = self.request.POST.getlist('passport_numbers[]')
+
+        reservation = form.save(commit=False)
+
+        reservation.id_accommodation_id = accommodation_id
+        reservation.passport_numbers = passport_numbers if passport_numbers and passport_numbers != '0' else None
+
+        
+        reservation.save()
+        
+        messages.success(self.request, "Reservation added successfully!")
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, "Please correct the errors below.")
+        return super().form_invalid(form)
+
+def reservations_pdf(request):
+    reservations = Reservation.objects.all()  # or any filtered queryset based on your requirement
+    template_path = 'backOffice/pages/Reservation/reservations_list_pdf.html'  # New HTML template for the PDF
+    context = {'reservations': reservations}
+
+    # Render HTML to a PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reservations_list.pdf"'
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # Create a PDF using xhtml2pdf
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('We had some errors with generating your PDF <pre>' + html + '</pre>')
+    return response

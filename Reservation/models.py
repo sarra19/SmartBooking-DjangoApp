@@ -28,7 +28,9 @@ class Reservation(models.Model):
     updated_at = models.DateTimeField(auto_now=True)  
     number_of_travelers = models.PositiveIntegerField(default=1, blank=True, null=True)
     passport_numbers = models.JSONField(default=list, blank=True, null=True)  # Allow NULL values
+    prompt = models.TextField(blank=True, null=True)
 
+    reservinfo = models.JSONField(default=dict, blank=True, null=True)
 
     def __str__(self):
         return f"Reservation: {self.name_reservation} on {self.created_at.strftime('%Y-%m-%d %H:%M:%S')}, Status: {self.get_status_display()}"

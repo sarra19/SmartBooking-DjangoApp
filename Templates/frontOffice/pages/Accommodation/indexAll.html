@@ -19,27 +19,12 @@
     <!-- Accommodations Start -->
     <div class="container my-5">
         <div class="row align-items-center">
-
-            <div class="col text-start">
-                <a href="{% url 'reservation:Rsv-flight-front'%}" class="btn btn-link text-success mb-4">
-                    Back to flights list
-                    <i class="bi bi-arrow-left"></i> <!-- Bootstrap Icon -->
-                </a>
+            <div class="col">
+                <h2 class="text-black text-center mb-4">Need Accommodations?</h2>
             </div>
-            <div class="col text-end">
-                <a href="{% url 'reservation:Rsv-front' flight_id 0 %}" class="btn btn-link text-success mb-4">
-                    No thanks! 
-                    <i class="bi bi-arrow-right"></i> <!-- Bootstrap Icon -->
-                </a>
-            </div>
-           
             
         </div>
-        <div class="col">
-            <h2 class="text-black text-center mb-4">Need Accommodations?</h2>
-        </div>
-        
-       
+
         <div class="row">
             {% for accommodation in accommodations %}
                 <div class="col-lg-4 col-md-6 mb-4">
@@ -51,7 +36,7 @@
                             <p class="card-text"><strong>Type:</strong> {{ accommodation.type_of_accommodation }}</p>
                             <p class="card-text"><strong>Price per Night:</strong> ${{ accommodation.price_per_night }}</p>
                             <p class="card-text"><strong>Amenities:</strong> {{ accommodation.amenities.all|join:", " }}</p>
-                            <a href="{% url 'reservation:Rsv-front' flight_id accommodation.id %}" class="btn btn-success mt-2">Reserve</a>  <!-- Reserve Button -->
+                            <a href="{% url 'reservation:Rsv-frontAcc' accommodation.id %}" class="btn btn-success mt-2">Reserve</a>  <!-- Reserve Button -->
                         </div>
                     </div>
                 </div>

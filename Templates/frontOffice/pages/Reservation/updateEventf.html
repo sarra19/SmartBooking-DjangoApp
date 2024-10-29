@@ -1,0 +1,96 @@
+{% extends 'frontOffice/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <!-- Header Start -->
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h3 class="text-white display-3 mb-4">My Reservations</h3>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'front:indexF' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                <li class="breadcrumb-item active text-white">My Reservations</li>
+            </ol>    
+        </div>
+    </div>
+    
+    <div class="mb-4 mt-5">
+        <div class="col-lg-8 col-md-10 col-12 mx-auto">
+            <form class="needs-validation" method="POST" novalidate>
+                {% csrf_token %}
+         
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Reservation Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+
+                            <!-- Event Selection -->
+                            <div class="col-md-6" id="event-container">
+                                <label for="{{ form.id_event.id_for_label }}" class="form-label">Choose Event</label>
+                                {{ form.id_event }}
+                                <div class="invalid-feedback">Please select an event.</div>
+                            </div>
+
+                            <!-- Reservation Name -->
+                            <div class="col-md-6">
+                                <label for="{{ form.name_reservation.id_for_label }}" class="form-label">Reservation Name</label>
+                                {{ form.name_reservation }}
+                                <div class="invalid-feedback">Please enter a reservation name.</div>
+                            </div>
+
+                            <!-- CIN -->
+                            <div class="col-md-6">
+                                <label for="{{ form.cin.id_for_label }}" class="form-label">CIN</label>
+                                {{ form.cin }}
+                                <div class="invalid-feedback">Please enter your CIN (8 digits).</div>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="col-md-6">
+                                <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
+                                {{ form.phone_number }}
+                                <div class="invalid-feedback">Please enter your phone number (8 digits).</div>
+                            </div>
+
+                            <!-- Special Requests -->
+                            <div class="col-12">
+                                <label for="{{ form.special_requests.id_for_label }}" class="form-label">Special Requests</label>
+                                {{ form.special_requests }}
+                                <div class="invalid-feedback">Please enter any special requests.</div>
+                            </div>
+
+                            <!-- Status Selection -->
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">Status</label>
+                                {{ form.status }}
+                                <div class="invalid-feedback">Please select a reservation status.</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Update Reservation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% include "backOffice/partials/scripts.html" %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+{% endblock %}
