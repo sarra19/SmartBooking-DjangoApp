@@ -148,3 +148,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'chahd.zhaira@gmail.com'
 EMAIL_HOST_PASSWORD = 'vpyp amzj sdso hcsa'
 DEFAULT_FROM_EMAIL = 'noreply@gmail.com'
+# FaceX api
+FACEX_API_HOST = "facex-facex-v1.p.rapidapi.com" 
+FACEX_API_KEY = "0b3b105646mshcb64140d7bd3783p107fadjsndd3d929023bc"
+FACEX_USER_ID = "7041acf0f54c5cf35f63"
+FACEX_USER_KEY = "489896a4897f8b99af2c"
+FACEX_COMPARE_URL = "https://facex-facex-v1.p.rapidapi.com/compare_faces"
+FACEX_COMPARE_PATH = "/compare_faces?face_det=1&bboxes_2=52%2C102%2C150%2C200&bboxes_1=50%2C100%2C150%2C200"

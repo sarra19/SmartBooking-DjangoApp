@@ -12,129 +12,173 @@
   <div class="container d-flex flex-column">
     <div class="row align-items-center justify-content-center g-0
         min-vh-100">
-      <div class="col-12 col-md-8 col-lg-6 col-xxl-4 py-8 py-xl-0">
+      <div class="col-12 col-md-8 col-lg-6 col-xxl-8 py-8 py-xl-0">
         <!-- Card -->
         <div class="card smooth-shadow-md">
           <!-- Card body -->
           <div class="card-body p-6">
             <div class="mb-4 text-center">
-              <img src="{% static 'backOffice/assets/images/brand/logo/smart.png' %}" class="mb-2 img-fluid" alt="Logo" style="max-width: 80px; height: auto;">
-              <p class="mb-6">SmartBooking</p>
-
+              <img src="{% static 'backOffice/assets/images/brand/logo/logo.png' %}" class="mb-2 img-fluid" alt="Logo"
+                style="max-width: 130px; height: auto;">
             </div>
             <!-- Form -->
             <form method="POST">
-            {% csrf_token %}
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    <ul>
-                        {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
+              {% csrf_token %}
+              {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                <ul>
+                  {% for error in form.non_field_errors %}
+                  <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
               <!-- cin -->
-              <div class="mb-3">
-                <label for="id_cin" class="form-label">Cin</label>
-                {{ form.cin }}
-                {% if form.cin.errors %}
+              <div class="row">
+                <!-- Colonne gauche avec 3 champs -->
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="id_cin" class="form-label">Cin</label>
+                    {{ form.cin }}
+                    {% if form.cin.errors %}
                     <div class="text-danger">
-                        {% for error in form.cin.errors %}
-                            <small>{{ error }}</small>
-                        {% endfor %}
+                      {% for error in form.cin.errors %}
+                      <small>{{ error }}</small>
+                      {% endfor %}
                     </div>
-                {% endif %}
-              </div>
-              <!-- firstname -->
-              <div class="mb-3">
-                <label for="id_first_name" class="form-label">FirstName</label>
-                {{ form.first_name }} 
-                {% if form.first_name.errors %}
+                    {% endif %}
+                  </div>
+                  <!-- firstname -->
+                  <div class="mb-3">
+                    <label for="id_first_name" class="form-label">FirstName</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
                     <div class="text-danger">
-                        {% for error in form.first_name.errors %}
-                            <small>{{ error }}</small>
-                        {% endfor %}
+                      {% for error in form.first_name.errors %}
+                      <small>{{ error }}</small>
+                      {% endfor %}
                     </div>
-                {% endif %}             
-              </div>
-              <!-- Lastname -->
-              <div class="mb-3">
-                <label for="id_last_name" class="form-label">LastName</label>
-                {{ form.last_name }} 
-                {% if form.last_name.errors %}
+                    {% endif %}
+                  </div>
+                  <!-- Lastname -->
+                  <div class="mb-3">
+                    <label for="id_last_name" class="form-label">LastName</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
                     <div class="text-danger">
-                        {% for error in form.last_name.errors %}
-                            <small>{{ error }}</small>
-                        {% endfor %}
+                      {% for error in form.last_name.errors %}
+                      <small>{{ error }}</small>
+                      {% endfor %}
                     </div>
-                {% endif %}              
-              </div>
-              <!-- Username -->
-              <div class="mb-3">
-                <label for="id_username" class="form-label">User Name</label>
-                {{ form.username }}
-                {% if form.username.errors %}
+                    {% endif %}
+                  </div>
+                  <!-- Username -->
+                  <div class="mb-3">
+                    <label for="id_username" class="form-label">User Name</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
                     <div class="text-danger">
-                        {% for error in form.username.errors %}
-                            <small>{{ error }}</small>
-                        {% endfor %}
+                      {% for error in form.username.errors %}
+                      <small>{{ error }}</small>
+                      {% endfor %}
                     </div>
-                {% endif %} 
-              </div>
-              <!-- Email -->
-              <div class="mb-3">
-                <label for="id_email" class="form-label">Email</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                    <div class="text-danger">
-                        {% for error in form.email.errors %}
-                            <small>{{ error }}</small>
-                        {% endfor %}
-                    </div>
-                {% endif %} 
-              </div>
-              <!-- Password -->
-              <div class="mb-3">
-                <label for="id_password1" class="form-label">Password</label>
-                {{ form.password1 }}
-                {% if form.password1.errors %}
-                    <div class="text-danger">
-                        {% for error in form.password1.errors %}
-                            <small>{{ error }}</small>
-                        {% endfor %}
-                    </div>
-                {% endif %} 
-              </div>
-              <!-- Password -->
-              <div class="mb-3">
-                <label for="id_password2" class="form-label">Confirm Password</label>
-                {{ form.password2 }}
-                {% if form.password2.errors %}
-                    <div class="text-danger">
-                        {% for error in form.password2.errors %}
-                            <small>{{ error }}</small>
-                        {% endfor %}
-                    </div>
-                {% endif %} 
-              </div>
-              <div>
-                <!-- Button -->
-                <div class="d-grid">
-                  <input type="submit" value="Register" class="btn btn-primary">
+                    {% endif %}
+                  </div>
                 </div>
 
-                <div class="d-md-flex justify-content-between mt-4">
-                  <div class="mb-2 mb-md-0">
-                      <a href="{% url 'back:signin' %}" class="fs-5">Already a member? Login</a>
+                <div class="col-md-6">
+                  <!-- Email -->
+                  <div class="mb-3">
+                    <label for="id_email" class="form-label">Email</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                    <div class="text-danger">
+                      {% for error in form.email.errors %}
+                      <small>{{ error }}</small>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
                   </div>
-                  <div>
-                      <a href="{% url 'back:forgetpassword' %}" class="text-inherit fs-5">Forgot your password?</a>
-                  </div>
-              </div>
-              
-              </div>
+                  <!-- Keyword -->
 
+                  <div class="d-md-flex justify-content-between mt-2">
+                    <div class="mb-2 mb-md-0">
+                      <div class="mb-3">
+                        <label for="keyword" class="form-label mr-2">Keyword</label>
+                        {{ form.keyword }}
+                        {% if form.keyword.errors %}
+                        <div class="text-danger">
+                          {% for error in form.keyword.errors %}
+                          <small>{{ error }}</small>
+                          {% endfor %}
+                        </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div>
+                      <button type="submit" id="generate-password" class="btn btn-primary mx-2 mt-6">Secure
+                        Pass</button>
+                    </div>
+                  </div>
+                  <!-- Password -->
+                  <div class="d-md-flex align-items-center">
+                    <div class="mb-2 mb-md-0">
+                      <div class="mb-3">
+                        <label for="id_password1" class="form-label">Password</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                        <div class="text-danger">
+                          {% for error in form.password1.errors %}
+                          <small>{{ error }}</small>
+                          {% endfor %}
+                        </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div>
+                      <span id="toggle-password1" class="input-group-text mt-3" style="cursor: pointer;">
+                        👁️
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Password -->
+                  <div class="d-md-flex align-items-center">
+                    <div class="mb-2 mb-md-0">
+                      <div class="mb-3">
+                        <label for="id_password2" class="form-label">Confirm Password</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                        <div class="text-danger">
+                          {% for error in form.password2.errors %}
+                          <small>{{ error }}</small>
+                          {% endfor %}
+                        </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div>
+                      <span id="toggle-password2" class="input-group-text mt-3" style="cursor: pointer;">
+                        👁️
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <!-- Button -->
+                  <div class="d-flex justify-content-center mt-6">
+                    <input type="submit" value="Register" class="btn btn-primary">
+                  </div>
+
+                  <div class="d-md-flex justify-content-between mt-4">
+                    <div class="mb-2 mb-md-0">
+                      <a href="{% url 'front:login' %}" class="fs-5">Already a member? Login</a>
+                    </div>
+                    <div>
+                      <a href="{% url 'front:password_reset' %}" class="text-inherit fs-5">Forgot your password?</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </form>
           </div>
         </div>
@@ -144,6 +188,50 @@
 
   <!-- Scripts -->
   {% include "backOffice/partials/scripts.html" %}
+
+  <script>
+    document.getElementById('generate-password').addEventListener('click',
+      function () {
+        const keyword = document.getElementById('{{ form.keyword.id_for_label }}').value;
+        fetch('{% url "front:generate_password" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: JSON.stringify({ keyword: keyword })
+        })
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('{{ form.password1.id_for_label }}').value = data.password1;
+          })
+          .catch(error => console.error('Error:', error));
+      });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const togglePassword1 = document.getElementById('toggle-password1');
+
+      togglePassword1.addEventListener('click', function () {
+        const passwordField1 = document.getElementById('id_password1');
+        const type = passwordField1.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField1.setAttribute('type', type);
+        this.textContent = type === 'password' ? '👁️' : '🙈'; // Change l'icône
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const togglePassword1 = document.getElementById('toggle-password2');
+
+      togglePassword1.addEventListener('click', function () {
+        const passwordField1 = document.getElementById('id_password2');
+        const type = passwordField1.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField1.setAttribute('type', type);
+        this.textContent = type === 'password' ? '👁️' : '🙈'; // Change l'icône
+      });
+    });
+
+  </script>
+
 </body>
 
 </html>

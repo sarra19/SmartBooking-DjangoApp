@@ -13,6 +13,8 @@ class Person(AbstractUser):
     username = models.CharField(max_length=50 , unique = True)
     image = models.ImageField(null=True , upload_to="images/")
     location = models.CharField(max_length=50,default='Unknown')
+    # face_image = models.ImageField(upload_to='face_images/', null=True, blank=True)
+    keyword = models.CharField(max_length=10 , default=' ')
 
     def __str__(self):
         return self.username

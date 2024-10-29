@@ -6,7 +6,7 @@ from .models import Person
 from .forms import UserRegisterForm
 from django.contrib import messages
 from .forms import PersonForm
-from .forms import UpdatePersonForm , PersonUpdateProfileForm , CustomPasswordChangeForm
+from .forms import UpdatePersonForm , PersonUpdateProfileForm , CustomPasswordChangeForm ,  FaceLoginForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
@@ -17,7 +17,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.views.generic.edit import FormView
 from django.urls import reverse_lazy
-from .forms import PasswordResetRequestForm
+from .forms import PasswordResetRequestForm , CustomUserCreationForm
 from django.contrib.auth.forms import SetPasswordForm
 from django.utils.http import urlsafe_base64_decode
 # from django.utils.encoding import force_text
@@ -25,6 +25,17 @@ from django.utils.encoding import force_str
 from django.views.generic import View
 from django.urls import reverse
 from django.conf import settings
+import http.client
+from django.conf import settings
+from django.http import JsonResponse
+import requests
+from django.conf import settings
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+
+import google.generativeai as genai
+from django.http import HttpResponse, JsonResponse
+import json
 
 
 def register(request):
@@ -110,31 +121,6 @@ class PersonDeleteView(DeleteView):
 #         return Person.objects.all()
 
 
-@login_required
-def settings_view(request):
-    user = request.user
-
-    # Changer l'avatar
-    if request.method == 'POST' and 'avatar' in request.FILES:
-        avatar = request.FILES['avatar']
-        user.image = avatar
-        user.save()
-        messages.success(request, 'Avatar changed successfully!')
-        return redirect('back:settings_view')
-
-    # Contexte pour le template
-    context = {
-        'user': user,
-    }
-
-    return render(request, 'BackOffice/pages/settings.html', context)
-
-@login_required
-def remove_avatar(request):
-    user = request.user
-    user.image.delete(save=True)  # Supprimer l'avatar actuel
-    messages.success(request, 'Avatar removed successfully!')
-    return redirect('back:settings_view')
 
 @login_required
 def settingsProfile(request, *args, **kwargs):
@@ -259,3 +245,159 @@ def password_reset_request_view(request):
 
 def password_reset_done(request):
     return render(request, "frontOffice/person/password_reset_done.html")
+
+
+# def compare_faces(request):
+#     # URL des images pour la comparaison
+#     image_url_1 = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Mohanlal_Viswanathan_Nair_BNC.jpg/240px-Mohanlal_Viswanathan_Nair_BNC.jpg"
+#     image_url_2 = "https://www.thenewsminute.com/sites/default/files/styles/news_detail/public/Mohanlal_DN_0.jpg?itok=rosZJnyx"
+
+#     payload = f"""-----011000010111000001101001\r\n
+#     Content-Disposition: form-data; name="img_1"\r\n\r\n{image_url_1}\r\n
+#     -----011000010111000001101001\r\n
+#     Content-Disposition: form-data; name="img_2"\r\n\r\n{image_url_2}\r\n
+#     -----011000010111000001101001--\r\n\r\n"""
+
+#     headers = {
+#         'x-rapidapi-key': settings.FACEX_API_KEY,
+#         'x-rapidapi-host': settings.FACEX_API_HOST,
+#         'Content-Type': "multipart/form-data; boundary=---011000010111000001101001",
+#         'user_id': settings.FACEX_USER_ID,
+#         'user_key': settings.FACEX_USER_KEY
+#     }
+
+#     # Connexion et requête
+#     conn = http.client.HTTPSConnection(settings.FACEX_API_HOST)
+#     conn.request("POST", settings.FACEX_COMPARE_PATH, payload, headers)
+
+#     res = conn.getresponse()
+#     data = res.read()
+#     conn.close()
+
+#     # Affichage des résultats de l'API
+#     return JsonResponse({"result": data.decode("utf-8")})
+
+
+# def login_with_face(request):
+#     if request.method == "POST":
+#         # Récupérer l'image soumise par l'utilisateur pour le login
+#         face_image = request.FILES['face_image']
+
+#         # URL de l'API et entêtes d’authentification
+#         url = "https://facex-facex-v1.p.rapidapi.com/compare_faces"
+#         headers = {
+#             "x-rapidapi-key": settings.FACEX_API_KEY,
+#             "x-rapidapi-host": "facex-facex-v1.p.rapidapi.com",
+#             "Content-Type": "multipart/form-data",
+#             "user_id": settings.FACEX_USER_ID ,
+#             "user_key": settings.FACEX_USER_KEY,
+#         }
+
+#         # Parcourir les utilisateurs pour trouver un match avec l’image faciale
+#         for person in Person.objects.filter(face_image__isnull=False):
+#             files = {
+#                 "img_1": face_image,
+#                 "img_2": person.face_image.url,  # URL de l’image de référence enregistrée
+#             }
+            
+#             # Envoi de la requête pour comparaison des visages
+#             response = requests.post(url, headers=headers, files=files)
+            
+#             if response.status_code == 200:
+#                 result = response.json()
+#                 similarity = result.get("similarity", 0)
+                
+#                 # Authentifier si le pourcentage de similarité est assez élevé
+#                 if similarity > 90:  # seuil de similarité ajustable
+#                     login(request, person)
+#                     return redirect("front:indexF")
+
+#         # Si aucun visage n'est reconnu, afficher une erreur
+#         return render(request, "frontOffice/person/login.html", {"error": "Visage non reconnu."})
+
+#     return render(request, "frontOffice/person/login.html")
+
+
+# # finale hedhy 
+# def register(request):
+#     if request.method == "POST":
+#         form = CustomUserCreationForm(request.POST, request.FILES)  # Inclure request.FILES pour l'upload
+#         if form.is_valid():
+#             user = form.save()  # Sauvegarde l’utilisateur avec l’image faciale
+#             login(request, user)  # Connexion automatique après l’inscription
+#             return redirect("front:indexF")  # Redirigez vers la page d'accueil ou une autre page
+#     else:
+#         form = CustomUserCreationForm()
+    
+#     return render(request, "frontOffice/person/RegisterFace.html", {"form": form})
+
+# def face_login(request):
+#     if request.method == 'POST':
+#         form = FaceLoginForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             face_image = request.FILES.get('face_image')
+#             user = authenticate_face(request , face_image)
+#             if user:
+#                 # Connectez l'utilisateur
+#                 login(request, user)
+#                 return redirect('front:indexFront')  # Redirigez vers la page d'accueil ou autre
+#             else:
+#                 error_message = "Reconnaissance faciale échouée. Essayez à nouveau."
+#                 return render(request, 'frontOffice/person/face_login.html', {'form': form, 'error_message': error_message})
+#     else:
+#         form = FaceLoginForm()
+#     return render(request, 'frontOffice/person/face_login.html', {'form': form})
+
+# def authenticate_face(request, face_image):
+#     url = "https://facex-facex-v1.p.rapidapi.com/compare_faces"
+    
+#     face_image_data = face_image.read()
+
+#     stored_user_images = Person.objects.all()
+#     for user in stored_user_images:
+#         if not user.face_image:
+#             continue
+
+#         stored_image_url = request.build_absolute_uri(user.face_image.url)
+
+#         querystring = {
+#             "face_det": "1"
+#         }
+
+#         headers = {
+#             "x-rapidapi-key": "0b3b105646mshcb64140d7bd3783p107fadjsndd3d929023bc",
+#             "x-rapidapi-host": "facex-facex-v1.p.rapidapi.com",
+#             "Content-Type": "multipart/form-data"
+#         }
+
+#         response = requests.post(url, data={
+#             'img_1': (face_image.name, face_image_data, face_image.content_type),
+#             'img_2': (stored_image_url, requests.get(stored_image_url).content, 'image/jpeg')
+#         }, headers=headers, params=querystring)
+
+#         print(response.json())  # Affiche la réponse pour déboguer
+
+#         if response.status_code == 200:
+#             result = response.json()
+#             # Réduisez le seuil de similarité pour tester
+#             if result.get('similarity') >= 0.5:
+#                 return user
+
+#     return None
+
+################generation de password sécurisé###################
+genai.configure(api_key="AIzaSyBU9E_Dbq8rYEjuGPlCvuqPytXMk0N71YU")
+
+def ai_generate_password(keyword):
+    model = genai.GenerativeModel("gemini-1.5-flash") #le model gemini qu'on va utiliser
+    prompt = f"Generate only a  meaningful in that must contain at least 8 characters, cannot be entirely numeric , with symbols, numbers , and must include the keyword: {keyword}"
+    response = model.generate_content(prompt)  
+    return response.text
+
+def generate_password(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        keyword = data.get('keyword')
+        password1 = ai_generate_password(keyword)
+        return JsonResponse({'password1': password1})
+    return JsonResponse({'error': 'Invalid request'}, status=400)

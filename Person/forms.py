@@ -11,7 +11,7 @@ class UserRegisterForm(UserCreationForm):
     class Meta:
         model = get_user_model()
         
-        fields= ['cin','first_name','last_name','username','email','password1','password2']
+        fields= ['cin','first_name','last_name','username','email','keyword', 'password1','password2']
         
 
     def __init__(self, *args, **kwargs):
@@ -20,6 +20,8 @@ class UserRegisterForm(UserCreationForm):
         # Ajouter la classe Bootstrap 'form-control' à chaque champ
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+        
+        self.fields['keyword'].widget.attrs['placeholder'] = 'You can enter a keyword for your password'
 
     
     def save(self , commit=True):
@@ -138,3 +140,15 @@ class CustomPasswordChangeForm(PasswordChangeForm):
 
 class PasswordResetRequestForm(forms.Form):
     email = forms.EmailField(label="Email", max_length=254)
+
+
+
+class CustomUserCreationForm(UserCreationForm):
+    face_image = forms.ImageField(required=True, label="Image faciale")
+
+    class Meta:
+        model = Person
+        fields = ['username', 'password1', 'password2', 'face_image']
+
+class FaceLoginForm(forms.Form):
+    face_image = forms.ImageField(label='Téléchargez votre image')
