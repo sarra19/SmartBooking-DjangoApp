@@ -126,27 +126,30 @@ def settingsProfile(request, *args, **kwargs):
 
 @login_required
 def settingsProfile(request):
-    user = request.user  # Obtenez l'utilisateur connecté
+    user = request.user  
 
     if request.method == 'POST':
-        # Vérifiez quel formulaire a été soumis
-        if 'update_profile' in request.POST:  # Mise à jour du profil
+        if 'update_profile' in request.POST:  
             form = PersonUpdateProfileForm(request.POST, request.FILES, instance=user)
             if form.is_valid():
-                form.save()  # Enregistrez les modifications
+                form.save()  
                 messages.success(request, 'Your profile was successfully updated!')
-                return redirect('settingsProfile')
-        elif 'change_password' in request.POST:  # Changement de mot de passe
-            form = CustomPasswordChangeForm(user=request.user, data=request.POST)
-            if form.is_valid():
-                form.save()
-                update_session_auth_hash(request, form.user)  # Gardez l'utilisateur connecté
-                messages.success(request, 'Your password was successfully updated!')
-                return redirect('settingsProfile')
+                return redirect('front:settingsProfile')
+        elif 'change_password' in request.POST: 
+            password_form = CustomPasswordChangeForm(user=user, data=request.POST)  
+            if password_form.is_valid():
+                user = password_form.save()  
+                update_session_auth_hash(request, user)  
+                messages.success(request, 'Your password has been successfully updated !')
+                return redirect('front:settingsProfile') 
             else:
                 messages.error(request, 'Please correct the error below.')
+        elif 'delete_account' in request.POST: 
+            user.delete() 
+            messages.success(request, 'Your account has been successfully deleted.')
+            return redirect('front:indexF')  
     else:
-        form = PersonUpdateProfileForm(instance=user)  # Remplissez le formulaire avec les données existantes
+        form = PersonUpdateProfileForm(instance=user)  
         password_form = CustomPasswordChangeForm(user=user)
 
     return render(request, 'frontOffice/person/settingsProfile.html', {

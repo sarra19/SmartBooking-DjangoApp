@@ -4,7 +4,7 @@ from .models import Person
 from django.contrib.auth import get_user_model
 from django.forms.widgets import ClearableFileInput
 from django.contrib.auth.forms import PasswordChangeForm
-
+from django.utils.translation import gettext_lazy as _ 
 
 class UserRegisterForm(UserCreationForm):
     
@@ -110,20 +110,26 @@ class PersonUpdateProfileForm(forms.ModelForm):
         return user
 
 class CustomPasswordChangeForm(PasswordChangeForm):
-    def __init__(self, *args, **kwargs):
-        super(CustomPasswordChangeForm, self).__init__(*args, **kwargs)
-        self.fields['old_password'].widget.attrs.update({
-            'class': 'form-control',
-            'placeholder': 'Enter Current password',
-            'id': 'id_old_password'  # Assurez-vous d'ajouter un ID
-        })
-        self.fields['new_password1'].widget.attrs.update({
-            'class': 'form-control',
-            'placeholder': 'Enter New password',
-            'id': 'id_new_password1'  # Assurez-vous d'ajouter un ID
-        })
-        self.fields['new_password2'].widget.attrs.update({
-            'class': 'form-control',
-            'placeholder': 'Confirm New password',
-            'id': 'id_new_password2'  # Assurez-vous d'ajouter un ID
-        })
+    old_password = forms.CharField(
+        label=_("Current password"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={'class': 'form-control','autocomplete': 'current-password'}),
+    )
+    new_password1 = forms.CharField(
+        label=_("New password"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={'class': 'form-control','autocomplete': 'new-password'}),
+        help_text=_("Minimum 8 characters long the more, the better, "
+                    "At least one lowercase character, "
+                    "At least one uppercase character,"
+                    "At least one number, symbol, or whitespace character"),
+    )
+    new_password2 = forms.CharField(
+        label=_("Confirm new password"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={'class': 'form-control','autocomplete': 'new-password'}),
+    )
+
+    class Meta:
+        model = None  # Pas besoin de définir un modèle ici
+        fields = ['old_password', 'new_password1', 'new_password2']
