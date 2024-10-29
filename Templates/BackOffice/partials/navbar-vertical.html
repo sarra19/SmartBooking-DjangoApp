@@ -179,6 +179,9 @@
     <div id="navEvents" class="collapse {% if context.page_group == 'events' %}show{% endif %}" data-bs-parent="#sideNavbar">
         <ul class="nav flex-column">
             <li class="nav-item">
+                <a class="nav-link" href="{% url 'Event:event_list' %}">List of Events</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {% if context.page == 'signin' %}active{% endif %}" href="{% url 'back:signin' %}">Sign In</a>
             </li>
             <li class="nav-item">
