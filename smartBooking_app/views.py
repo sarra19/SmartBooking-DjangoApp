@@ -64,6 +64,7 @@ def p404(request, *args, **kwargs):
 ####################################################################################
 
 # Back-Office
+
 def home(request, *args, **kwargs):
     return render(request, 'backOffice/index.html')
 
