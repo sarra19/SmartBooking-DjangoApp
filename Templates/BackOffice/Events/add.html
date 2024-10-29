@@ -17,81 +17,132 @@
         <div id="page-content">
             {% include 'BackOffice/partials/header.html' %}
             <div class="container mt-5">
-                <!-- Titre avec fond bleu et texte blanc -->
-                <div class="bg-primary p-3 mb-4 text-center">
-                    <h2 class="text-white">Create New Event</h2>
+                <!-- Title with blue background and white text -->
+                <div class="bg-primary p-3 mb-4 text-center rounded">
+                    <h2 class="text-white"><i class="bi bi-calendar-event"></i> Create New Event</h2>
                 </div>
 
-                <!-- Formulaire de création d'événement -->
-                <div class="card mx-auto" style="max-width: 800px; padding: 20px;">
-                    <form method="POST" action="{% url 'Event:add_event' %}" enctype="multipart/form-data">
-                        {% csrf_token %}
+                <!-- Event creation form -->
+                <div class="card mx-auto shadow-lg" style="max-width: 800px;">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'Event:add_event' %}" enctype="multipart/form-data" class="form-group">
+                            {% csrf_token %}
 
-                        <!-- Titre de l'événement -->
-                        <div class="mb-3">
-                            <label for="event_title">Event Title</label>
-                            <input type="text" class="form-control" id="event_title" name="title" placeholder="Enter event title" required>
-                        </div>
+                            <table class="table">
+                                <tr>
+                                    <td><label for="event_title"><i class="bi bi-pencil-square"></i> Event Title</label></td>
+                                    <td><input type="text" class="form-control" id="event_title" name="title" placeholder="Enter event title" required></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="event_description"><i class="bi bi-textarea-resize"></i> Description</label></td>
+                                    <td>
+                                        <textarea class="form-control" id="event_description" name="description" rows="4" placeholder="Enter event description" required></textarea>
+                                        <button type="button" class="mx-2 btn btn-warning" id="generate-description">Ai description</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="event_image"><i class="bi bi-image"></i> Event Image</label></td>
+                                    <td><input type="file" class="form-control" id="event_image" name="image"></td>
+                                    <td>
+                                        <button type="button" class="mx-2 btn btn-success" id="generate-image-button">Ai Image</button>
+                                    </td>
+                                    <td>
+                                        <div id="generated-image-container"></div>
+                                        <input type="hidden" name="generated-image-path" id="generated-image-path">
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td><label for="start_date"><i class="bi bi-calendar2-week"></i> Start Date</label></td>
+                                    <td><input type="datetime-local" class="form-control" id="start_date" name="start_date" required></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="end_date"><i class="bi bi-calendar2-week"></i> End Date</label></td>
+                                    <td><input type="datetime-local" class="form-control" id="end_date" name="end_date" required></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="event_location"><i class="bi bi-geo-alt"></i> Location</label></td>
+                                    <td><input type="text" class="form-control" id="event_location" name="location" placeholder="Enter event location" required></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="event_city"><i class="bi bi-building"></i> City</label></td>
+                                    <td><input type="text" class="form-control" id="event_city" name="city" placeholder="Enter event city" required></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="price_per_place"><i class="bi bi-currency-dollar"></i> Price Per Place</label></td>
+                                    <td><input type="number" class="form-control" id="price_per_place" name="price_per_place" placeholder="Enter price per place" required></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="number_places"><i class="bi bi-people"></i> Number of Places</label></td>
+                                    <td><input type="number" class="form-control" id="number_places" name="number_places" placeholder="Enter number of places" required></td>
+                                </tr>
+                            </table>
 
-                        <!-- Description de l'événement -->
-                        <div class="mb-3">
-                            <label for="event_description">Description</label>
-                            <textarea class="form-control" id="event_description" name="description" rows="4" placeholder="Enter event description" required></textarea>
-                        </div>
-
-                        <!-- Image de l'événement -->
-                        <div class="mb-3">
-                            <label for="event_image">Event Image</label>
-                            <input type="file" class="form-control" id="event_image" name="image">
-                        </div>
-
-                        <!-- Date et heure de début et de fin -->
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="start_date">Start Date</label>
-                                <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+                            <!-- Buttons "Return" and "Create Event" on the same line -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{% url 'Event:event_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left-circle"></i> Return to List
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle"></i> Create Event
+                                </button>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="end_date">End Date</label>
-                                <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
-                            </div>
-                        </div>
-
-                        <!-- Lieu et ville de l'événement -->
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="event_location">Location</label>
-                                <input type="text" class="form-control" id="event_location" name="location" placeholder="Enter event location" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="event_city">City</label>
-                                <input type="text" class="form-control" id="event_city" name="city" placeholder="Enter event city" required>
-                            </div>
-                        </div>
-
-                        <!-- Prix et nombre de places -->
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="price_per_place">Price Per Place</label>
-                                <input type="number" class="form-control" id="price_per_place" name="price_per_place" placeholder="Enter price per place" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="number_places">Number of Places</label>
-                                <input type="number" class="form-control" id="number_places" name="number_places" placeholder="Enter number of places" required>
-                            </div>
-                        </div>
-
-                        <!-- Boutons "Return" et "Create Event" sur la même ligne -->
-                        <div class="d-flex justify-content-between mt-4">
-                            <!-- Bouton Retour à gauche -->
-                            <a href="{% url 'Event:event_list' %}" class="btn btn-secondary">Return to List</a>
-                            <!-- Bouton Créer à droite -->
-                            <button type="submit" class="btn btn-primary">Create Event</button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('generate-description').addEventListener('click',
+        function() {
+        const title = document.getElementById('event_title').value;
+        fetch('{% url "Event:generate_description" %}', {
+        method: 'POST',
+        headers: {
+        
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ title: title })
+        })
+        .then(response => response.json())
+        .then(data => {
+        document.getElementById('event_description').value = data.description;
+        })
+        .catch(error => console.error('Error:', error));
+        });
+</script>
+<script>
+    document.getElementById('generate-image-button').addEventListener('click',
+    function() {
+    const title = document.getElementById('event_title').value;
+    fetch('{% url "Event:generate_image" %}', {
+    method: 'POST',
+    headers: {
+    'Content-Type': 'application/json',
+    'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: JSON.stringify(
+    { title: title})
+    })
+    .then(response => response.json())
+    .then(data => {
+    if (data.image_url) {
+    document.getElementById('generated-image-container').innerHTML =
+    '<img width="300px" src="' + data.image_url + '" alt="Generated Image">';
+    document.getElementById('generated_image_path').value =
+    data.image_url;
+    console.log(data.image_url)
+    } else {
+    alert('Error generating image');
+    }
+    })
+    
+    .catch(error => {
+    alert('Error: ' + error.message);
+    });
+    });
+    </script>
 </body>
 </html>

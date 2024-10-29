@@ -1,0 +1,41 @@
+{% extends 'frontOffice/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4 text-center">{{ event.title }}</h1>
+
+    <!-- Button to trigger modal -->
+
+
+    <!-- Modal Structure -->
+    <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventDetailModalLabel">{{ event.title }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <img src="{{ MEDIA_URL }}{{ event.image }}" alt="{{ event.title }}" class="img-fluid rounded" style="max-height: 300px; object-fit: cover;">
+                    </div>
+                    <div>
+                        <p><strong>City:</strong> {{ event.city }}</p>
+                        <p><strong>Location:</strong> {{ event.location }}</p>
+                        <p><strong>Start Date:</strong> {{ event.start_date }}</p>
+                        <p><strong>End Date:</strong> {{ event.end_date }}</p>
+                        <p><strong>Price:</strong> {{ event.price_per_place }} DT</p>
+                        <p><strong>Description:</strong></p>
+                        <p>{{ event.description }}</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="{% url 'Event:event_list_front' %}" class="btn btn-primary">Back to Events</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

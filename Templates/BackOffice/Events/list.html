@@ -8,92 +8,110 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-        }
-        .bg-primary {
-            background-color: #007bff !important;
+            background-color: #f3f4f7;
         }
 
         h1 {
-            color: white !important;
+            color: #6f42c1;
+            font-weight: bold;
             margin-bottom: 20px;
+        }
+
+        .table-responsive {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         .table {
             width: 100%;
-            margin-bottom: 1rem;
             border-collapse: collapse;
-            background-color: #f8f9fa; /* Light background for the table */
+            background-color: #fff;
         }
 
         .table th {
-            background-color: #6f42c1; /* Purple header */
-            color: white;
-            padding: 10px 15px;
+            background-color: #6f42c1;
+            color: #fff;
+            padding: 12px;
             text-align: center;
+            font-size: 14px;
+            font-weight: bold;
         }
 
         .table td {
             padding: 10px;
             text-align: left;
-            border: 1px solid #dee2e6; /* Light border */
+            border-bottom: 1px solid #dee2e6;
             font-size: 14px;
-            background-color: white; /* White background for cells */
+            background-color: #fff;
             transition: background-color 0.3s;
         }
 
+        .table td img {
+            border-radius: 8px;
+        }
+
         .table tr:hover td {
-            background-color: #e2e3e5; /* Light gray on hover */
+            background-color: #f8f9fa;
         }
 
         .btn {
-            border-radius: 5px; /* Rounded buttons */
+            border-radius: 5px;
+            padding: 5px 12px;
+            font-size: 13px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .btn-success {
-            background-color: #28a745; /* Green */
+            background-color: #28a745;
             border-color: #28a745;
         }
 
         .btn-warning {
-            background-color: #ffc107; /* Yellow */
+            background-color: #ffc107;
             border-color: #ffc107;
         }
 
         .btn-danger {
-            background-color: #dc3545; /* Red */
+            background-color: #dc3545;
             border-color: #dc3545;
         }
 
-        /* Responsive adjustments for smaller screens */
+        .pagination .page-item .page-link {
+            color: #6f42c1;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #6f42c1;
+            border-color: #6f42c1;
+        }
+
+        /* Responsive styling */
         @media (max-width: 768px) {
             table, thead, tbody, th, td, tr {
                 display: block;
-                width: 100%;
             }
             th, td {
-                box-sizing: border-box;
-                padding: 10px;
+                padding: 12px;
                 text-align: right;
-                border: none;
             }
             td {
                 text-align: left;
-                position: relative;
                 padding-left: 50%;
+                position: relative;
             }
             td::before {
                 content: attr(data-label);
                 position: absolute;
                 left: 10px;
-                width: calc(50% - 20px);
-                white-space: nowrap;
                 text-align: left;
+                font-weight: bold;
+                color: #6f42c1;
             }
         }
     </style>
 </head>
-
-<body class="bg-light">
+<body>
     <div id="db-wrapper">
         {% include 'BackOffice/partials/navbar-vertical.html' with page="dashboard" %}
         <div id="page-content">
@@ -107,8 +125,7 @@
                             <a href="{% url 'Event:add_event' %}" class="btn btn-success">Add Event</a>
                         </div>
                     </div>
-                    <div class="mt-4"></div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
                         <div class="col-md-6">
                             <form method="GET" action="{% url 'Event:event_list' %}" class="d-flex">
                                 <div class="input-group me-2">
@@ -126,17 +143,16 @@
                             </form>
                         </div>
                     </div>
-
                     <div>
                         <a href="{% url 'Event:download_pdf' %}" class="btn btn-primary">Download PDF</a>
                     </div>
-
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>Image</th>
                                     <th>Event Title</th>
+                                    <th>Description</th>
                                     <th>City</th>
                                     <th>Location</th>
                                     <th>Start Date</th>
@@ -149,14 +165,15 @@
                             <tbody>
                                 {% for event in events %}
                                 <tr>
-                                    <td data-label="Image">
+                                    <td>
                                         {% if event.image %}
-                                        <img src="{{ event.image.url }}" alt="{{ event.title }}" style="width: 100px; height: 100px;">
+                                            <img src="{{ MEDIA_URL }}{{ event.image }}" alt="{{ event.event_name }}" style="width: 80px; height: 80px; object-fit: cover;">
                                         {% else %}
-                                        No Image
+                                            <span>No Image</span>
                                         {% endif %}
                                     </td>
                                     <td data-label="Event Title">{{ event.title }}</td>
+                                    <td data-label="City">{{ event.description }}</td>
                                     <td data-label="City">{{ event.city }}</td>
                                     <td data-label="Location">{{ event.location }}</td>
                                     <td data-label="Start Date">{{ event.start_date }}</td>
@@ -176,7 +193,6 @@
                             </tbody>
                         </table>
                     </div>
-
                     <div class="pagination-container mt-4">
                         <nav aria-label="Page navigation">
                             <ul class="pagination justify-content-center">
@@ -199,7 +215,7 @@
                                             <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}" aria-label="Next">&raquo;</a>
                                         </li>
                                         <li class="page-item">
-                                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}" aria-label="Last">&laquo;&laquo;</a>
+                                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}" aria-label="Last">&raquo;&raquo;</a>
                                         </li>
                                     {% endif %}
                                 {% endif %}
@@ -210,6 +226,6 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'backOffice/assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'backOffice/assets/js/theme.bundle.js' %}"></script>
 </body>
 </html>

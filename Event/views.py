@@ -1,19 +1,96 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
-from .models import Event
-from django.db.models import Q  # Import Q for querying
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger  # Import necessary classes
-from django.http import HttpResponse
+from django.db.models import Q
+from django.core.paginator import Paginator
+from django.http import HttpResponse, JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from .models import Event
+import openai
+from django.conf import settings
+import os
+import requests
+from django.core.files.base import ContentFile
+from io import BytesIO
+import genai
+from django.views.decorators.csrf import csrf_exempt
+import google.generativeai as genai
+import json
+from PIL import Image
+import io
+
+IMAGEGEN_KEY = settings.IMAGEGEN_KEY
+
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+genai.configure(api_key=GOOGLE_API_KEY)
+
+
+API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1-base"
+headers = {"Authorization": f"Bearer {IMAGEGEN_KEY} "}
+
+
+
+
+def imageGen(payload):
+    try:
+        response = requests.post(API_URL, headers=headers, json=payload)
+        response.raise_for_status()
+        print("Response from imageGen:", response.content)  # Ajoutez cette ligne
+        return response.content
+    except requests.exceptions.RequestException as e:
+        print("Request error:", e)
+        return None
+
+@csrf_exempt
+def generate_image(request):
+    if request.method == 'POST':
+        try:
+            return JsonResponse({'message': 'POST request received'}, status=200)
+        except Exception as e:
+            print("Error occurred:", e)
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+
+
+def ai_generate_description(title):
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    prompt = f"Generate a detailed description for an event with the title in 4 lines: {title}"
+    
+    response = model.generate_content(prompt)
+    return response.text
+
+
+
+
+@csrf_exempt  # Use only for testing; set up CSRF tokens in production
+def generate_description(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            title = data.get('title', '')
+
+            if not title:
+                return JsonResponse({'error': 'Title is required'}, status=400)
+
+            description = ai_generate_description(title)  # Use AI to generate description
+            return JsonResponse({'description': description}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+        
+
 
 def event_list(request):
-    # Retrieve all events
     events = Event.objects.all()
-
-    # Search functionality
     search_query = request.GET.get('q', '')
+    
     if search_query:
         events = events.filter(
             Q(title__icontains=search_query) |
@@ -22,36 +99,35 @@ def event_list(request):
             Q(city__icontains=search_query)
         )
 
-    # Sort functionality
-    sort_by = request.GET.get('sort')  # Default sort
-    valid_sort_fields = [
-        'start_date', 'end_date', 'price_per_place', 'number_places'
-    ]
-
+    sort_by = request.GET.get('sort')
+    valid_sort_fields = ['start_date', 'end_date', 'price_per_place', 'number_places']
     if sort_by in valid_sort_fields:
         events = events.order_by(sort_by)
     else:
-        events = events.order_by('start_date')  # Default value
+        events = events.order_by('start_date')  # Default sorting
 
-    # Pagination
     paginator = Paginator(events, 3)  # 3 events per page
-    page_number = request.GET.get('page')  # Get the requested page number
-    try:
-        events_page = paginator.page(page_number)  # Retrieve the requested page
-    except PageNotAnInteger:
-        events_page = paginator.page(1)  # If page is not an integer, return the first page
-    except EmptyPage:
-        events_page = paginator.page(paginator.num_pages)  # If page is empty, return the last page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    # Create context for rendering
     context = {
-        'events': events_page,  # Use the paginated events
-        'search_query': search_query,  # Include search query in context
-        'sort_by': sort_by,
-        'is_paginated': paginator.num_pages > 1,  # Check if pagination is necessary
+        'events': page_obj,
+        'page_obj': page_obj,
+        'is_paginated': page_obj.has_other_pages(),
     }
-
     return render(request, 'BackOffice/Events/list.html', context)
+
+def generate_image_from_description(description):
+    try:
+        response = openai.Image.create(
+            prompt=description,
+            n=1,
+            size="512x512"
+        )
+        return response['data'][0]['url']
+    except Exception as e:
+        print("Error generating image:", e)
+        return None
 
 def add_event(request):
     if request.method == 'POST':
@@ -73,7 +149,15 @@ def add_event(request):
         else:
             uploaded_file_url = ''
 
-        # Create the event with collected data
+        # Generate image if none is uploaded
+        if not uploaded_file_url:
+            image_url = generate_image_from_description(description)
+            if image_url:
+                image_response = requests.get(image_url)
+                image = ContentFile(image_response.content, name=f"{title}_generated_image.png")
+                uploaded_file_url = fs.save(image.name, image)  # Save the generated image
+
+        # Create the event
         event = Event(
             title=title,
             description=description,
@@ -86,7 +170,6 @@ def add_event(request):
             image=uploaded_file_url
         )
         event.save()
-
         return redirect('Event:event_list')
 
     return render(request, 'BackOffice/Events/add.html')
@@ -125,65 +208,102 @@ def delete_event(request, event_id):
     messages.success(request, "Event deleted successfully!")
     return redirect('Event:event_list')
 
-from django.http import HttpResponse
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from .models import Event
-
 def download_pdf(request):
-    # Create a HTTP response with PDF header
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="events.pdf"'
 
-    # Create a canvas to draw on
     p = canvas.Canvas(response, pagesize=letter)
     width, height = letter
 
-    # Draw the title
+    # Title
     p.setFont("Helvetica-Bold", 16)
-    p.drawString(100, height - 50, "List of Events")
+    p.drawString(220, height - 50, "List of Events")
     p.setFont("Helvetica", 10)
 
-    # Draw column headers
+    # Column headers
     p.setFont("Helvetica-Bold", 12)
-    p.drawString(100, height - 80, "Title")
-    p.drawString(300, height - 80, "City")
-    
-    # Draw a line under the headers
-    p.line(90, height - 85, width - 90, height - 85)
+    headers = ["Title", "City", "Location", "Start Date", "End Date"]
+    x_positions = [80, 200, 300, 400, 500]
+    y = height - 80
 
-    # Fetch events data
+    for i, header in enumerate(headers):
+        p.drawString(x_positions[i], y, header)
+    y -= 20
+    p.line(70, y + 10, width - 70, y + 10)
+
+    # Fetch events data and draw each row
     events = Event.objects.all()
+    row_alternate = [colors.whitesmoke, colors.lightgrey]  # Alternate row colors
+    row_color_index = 0
 
-    # Draw the events data
-    y = height - 100
     for event in events:
+        p.setFillColor(row_alternate[row_color_index % 2])
+        p.rect(70, y - 5, width - 140, 20, stroke=0, fill=1)
+
+        p.setFillColor(colors.black)  # Reset text color
         p.setFont("Helvetica", 10)
-        p.drawString(100, y, event.title)
-        p.drawString(300, y, event.city)
 
-        y -= 20  # Move down for the next event
+        # Draw event details
+        row_data = [
+            event.title,
+            event.city,
+            event.location,
+            event.start_date.strftime('%Y-%m-%d'),
+            event.end_date.strftime('%Y-%m-%d')
+        ]
+        for i, data in enumerate(row_data):
+            p.drawString(x_positions[i], y, str(data))
 
-        # Check if we need a new page
-        if y < 80:
+        y -= 25
+        row_color_index += 1
+
+        # New page if needed
+        if y < 50:
             p.showPage()
             p.setFont("Helvetica-Bold", 16)
-            p.drawString(100, height - 50, "List of Events")
-            p.setFont("Helvetica", 10)
-
-            # Redraw column headers
+            p.drawString(220, height - 50, "List of Events")
             p.setFont("Helvetica-Bold", 12)
-            p.drawString(100, height - 80, "Title")
-            p.drawString(300, height - 80, "City")
-            p.line(90, height - 85, width - 90, height - 85)
-            y = height - 100
+            y = height - 80
+            for i, header in enumerate(headers):
+                p.drawString(x_positions[i], y, header)
+            y -= 20
+            p.line(70, y + 10, width - 70, y + 10)
 
-    # Draw footer with page number
+    # Footer
     p.setFont("Helvetica-Oblique", 8)
     p.drawString(270, 10, "Generated by SmartBooking")
     p.drawString(width - 100, 10, f"Page {p.getPageNumber()}")
 
-    # Finalize the PDF
     p.showPage()
     p.save()
     return response
+
+def event_list_front(request):
+    events = Event.objects.all()
+    
+    search_query = request.GET.get('q', '')
+    if search_query:
+        events = events.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(location__icontains=search_query) |
+            Q(city__icontains=search_query)
+        )
+
+    paginator = Paginator(events, 3)  # 3 events per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'events': page_obj,
+        'page_obj': page_obj,
+        'is_paginated': page_obj.has_other_pages(),
+    }
+    return render(request, 'FrontOffice/Events/listFront.html', context)
+
+def detail_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    context = {
+        'event': event
+    }
+    return render(request, 'FrontOffice/Events/detail.html', context)
