@@ -21,38 +21,12 @@ import json
 from PIL import Image
 import io
 
-IMAGEGEN_KEY = settings.IMAGEGEN_KEY
 
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 genai.configure(api_key=GOOGLE_API_KEY)
 
 
-API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1-base"
-headers = {"Authorization": f"Bearer {IMAGEGEN_KEY} "}
 
-
-
-
-def imageGen(payload):
-    try:
-        response = requests.post(API_URL, headers=headers, json=payload)
-        response.raise_for_status()
-        print("Response from imageGen:", response.content)  # Ajoutez cette ligne
-        return response.content
-    except requests.exceptions.RequestException as e:
-        print("Request error:", e)
-        return None
-
-@csrf_exempt
-def generate_image(request):
-    if request.method == 'POST':
-        try:
-            return JsonResponse({'message': 'POST request received'}, status=200)
-        except Exception as e:
-            print("Error occurred:", e)
-            return JsonResponse({'error': str(e)}, status=500)
-
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
 
