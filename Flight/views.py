@@ -17,25 +17,24 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.platypus import Image
 from reportlab.lib.styles import getSampleStyleSheet
 
+
+
+
+
 def download_flights_pdf(request):
-    # Créer un objet HttpResponse avec le type de contenu PDF
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="flights.pdf"'
 
-    # Créer un document PDF
     pdf = SimpleDocTemplate(response, pagesize=letter)
 
-    # Récupérer les vols
     flights = Flight.objects.all()
 
-    # Créer les données pour le tableau
     data = [['Image', 'Airline', 'Flight Name', 'Flight Number', 'Departure City', 'Arrival City', 'Departure Date', 'Arrival Date', 'Price Per Place']]
     
     for flight in flights:
         image_path = flight.image.path if flight.image else None
         image = Image(image_path, width=0.5 * inch, height=0.5 * inch) if image_path else "No Image"
         
-        # Ajouter une ligne pour chaque vol
         data.append([
             image,
             flight.airline,
@@ -43,16 +42,14 @@ def download_flights_pdf(request):
             flight.flight_number,
             flight.departure_city,
             flight.arrival_city,
-            flight.departure_date.strftime('%Y-%m-%d'),  # Formater la date
-            flight.arrival_date.strftime('%Y-%m-%d'),    # Formater la date
+            flight.departure_date.strftime('%Y-%m-%d'),  
+            flight.arrival_date.strftime('%Y-%m-%d'),    
             f"{flight.price_per_place} DT"
         ])
 
-    # Créer le tableau avec des largeurs de colonnes
     column_widths = [0.5 * inch, 1 * inch, 1 * inch, 1 * inch, 1 * inch, 1 * inch, 1 * inch, 1 * inch, 1 * inch]
     table = Table(data, colWidths=column_widths)
 
-    # Appliquer un style au tableau
     style = TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -64,15 +61,17 @@ def download_flights_pdf(request):
     ])
     table.setStyle(style)
 
-    # Ajouter un titre
     styles = getSampleStyleSheet()
     title = Paragraph("List of Flights", styles['Title'])
 
-    # Construire le PDF
     elements = [title, table]
     pdf.build(elements)
 
     return response
+
+
+
+
 
 # Liste des vols
 # def flight_list(request):
@@ -81,128 +80,58 @@ def download_flights_pdf(request):
 #         'flights': flights,
 #     }
 #     return render(request, 'BackOffice/Flights/index.html', context)
+# Fonction pour obtenir des recommandations de vols depuis l'API Gemini
+
+
 def flight_list(request):
-    # Récupérer tous les vols
     flights = Flight.objects.all()
 
-    # Fonctionnalité de recherche
     search_query = request.GET.get('q', '')
     if search_query:
         flights = flights.filter(
             Q(flight_name__icontains=search_query) |
             Q(flight_number__icontains=search_query) |
             Q(departure_city__icontains=search_query) |
-            Q(arrival_city__icontains=search_query)
+            Q(arrival_city__icontains=search_query)  
         )
 
-    # Fonctionnalité de tri
-    sort_by = request.GET.get('sort')  # Tri par défaut
+    sort_by = request.GET.get('sort')  
     valid_sort_fields = [
-  'departure_date', 'arrival_date', 'flight_number', 'price_per_place'  # Utilisation de price_per_place
+  'departure_date', 'arrival_date', 'flight_number', 'price_per_place' 
 
     ]
 
     if sort_by in valid_sort_fields:
         flights = flights.order_by(sort_by)
     else:
-        flights = flights.order_by('departure_date')  # Valeur par défaut
+        flights = flights.order_by('departure_date')  
 
     # Pagination
-    paginator = Paginator(flights, 3)  # 3 vols par page
-    page_number = request.GET.get('page')  # Récupérer le numéro de la page de la requête
+    paginator = Paginator(flights, 3) 
+    page_number = request.GET.get('page')  
     try:
-        flights_page = paginator.page(page_number)  # Récupérer la page demandée
+        flights_page = paginator.page(page_number)  
     except PageNotAnInteger:
-        flights_page = paginator.page(1)  # Si la page n'est pas un entier, renvoyer la première page
+        flights_page = paginator.page(1)  
     except EmptyPage:
-        flights_page = paginator.page(paginator.num_pages)  # Si la page est vide, renvoyer la dernière page
+        flights_page = paginator.page(paginator.num_pages)  
+ 
 
- # Obtenir des recommandations de vols
-    user_id = request.user.id if request.user.is_authenticated else None
-    recommendations = get_flight_recommendations(user_id) if user_id else []
-
-
-    # Créer le contexte pour le rendu
     context = {
-        'flights': flights_page,  # Utiliser la page paginée des vols
+        'flights': flights_page,  
         'sort_by': sort_by,
-        'search_query': search_query,  # Inclure la requête de recherche dans le contexte
-        'page_obj': flights_page,  # Ajouter page_obj pour le template
-        'is_paginated': paginator.num_pages > 1,  # Pour vérifier si la pagination est nécessaire
-            'recommendations': recommendations,  # Ajoutez cette ligne
+        'search_query': search_query,  
+        'page_obj': flights_page,  
+        'is_paginated': paginator.num_pages > 1, 
+
 
     }
 
-    # Rendre la vue avec les vols trouvés
     return render(request, 'BackOffice/Flights/index.html', context)
 
 
 
-# Initialisez le client Amadeus avec votre clé API et votre secret
-# amadeus = Client(
-#     client_id='sPkddZjO4G8ykoMcAY7zEc5lHoMXkWV1',
-#     client_secret='tWlWSlxQ80IcDP8Q'  # Votre secret API
-# )
 
-# def search_flights(request):
-#     if request.method == 'GET':
-#         origin = request.GET.get('origin', 'LHR')  # Code de l'aéroport d'origine
-#         destination = request.GET.get('destination', 'CDG')  # Code de l'aéroport de destination
-#         departure_date = request.GET.get('departure_date', '2024-07-25')  # Date de départ
-#         adults = request.GET.get('adults', 1)  # Nombre d'adultes
-
-#         try:
-#             # Assurez-vous que vous utilisez correctement la méthode `get` sur l'objet `amadeus.shopping.flight_offers`
-#             response = amadeus.shopping.flight_offers.get(
-#                 originLocationCode=origin,
-#                 destinationLocationCode=destination,
-#                 departureDate=departure_date,
-#                 adults=adults
-#             )
-
-#             # Vérifiez si la réponse est valide
-#             if response and hasattr(response, 'data'):
-#                 flights = response.data  # Récupération des données des vols
-#                 print(flights)  # Imprimez les vols pour déboguer
-
-#         except ResponseError as error:
-#             print(f"Erreur lors de la recherche de vols : {error}")
-
-#         return render(request, 'search_flights.html')  # Rendre un template si ce n'est pas une requête GET
-
-# def flight_list_front(request):
-#     # Récupération des paramètres de la requête
-#     origin = request.GET.get('origin', 'LHR')
-#     destination = request.GET.get('destination', 'CDG')
-#     departure_date = request.GET.get('departure_date', '2024-07-25')
-#     adults = request.GET.get('adults', 1)
-
-#     flights = []
-#     popular_flights = []  # Remplacez ceci par votre logique pour obtenir des vols populaires
-
-#     try:
-#         # Requête pour rechercher des offres de vol
-#         response = amadeus.shopping.flight_offers.get(
-#             originLocationCode=origin,
-#             destinationLocationCode=destination,
-#             departureDate=departure_date,
-#             adults=adults
-#         )
-        
-#         # Vérifiez la structure de la réponse
-#         if response and hasattr(response, 'data'):
-#             flights = response.data  # Récupération des données des vols
-#             print(flights)  # Imprimez les vols pour déboguer
-
-#     except ResponseError as error:
-#         print(f"Erreur lors de la recherche de vols : {error}")
-
-#     context = {
-#         'flights': flights,
-#         'popular_flights': popular_flights,
-#     }
-
-#     return render(request, 'FrontOffice/Flights/index.html', context)
 def flight_list_front(request):
 
     flights = Flight.objects.all()

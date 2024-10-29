@@ -11,4 +11,5 @@ urlpatterns = [
         path('flights/', views.flight_list_front, name='flight_list_front'),
     path('flights/download_pdf/', views.download_flights_pdf, name='download_flights_pdf'),
 
+
 ]
