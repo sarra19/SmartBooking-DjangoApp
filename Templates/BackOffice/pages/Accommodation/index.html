@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include 'backOffice/partials/head.html' %}
+  <link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM4c5VJ1qQ4eE2jI2M6f4k99d9+U3p1m6pY2jH" crossorigin="anonymous">
+  <title>Accommodation Reservations</title>
+</head>
+
+<body class="bg-light">
+  <div id="db-wrapper">
+    {% include 'backOffice/partials/navbar-vertical.html' with page="Accommodation Reservations" page_group="reservations" subpage="accommodation" %}
+    
+    <div id="page-content">
+      {% include 'backOffice/partials/header.html' %}
+      <div class="container-fluid p-6">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-12">
+            <div class="border-bottom pb-4 mb-4">
+              <h3 class="mb-0 fw-bold">Accommodations</h3>  <!-- Updated title -->
+            </div>
+            <div class="mb-3 text-end">
+              <a href="{% url 'accommodation:add_accommodation' %}" class="btn btn-success">
+                <i data-feather="plus"></i> Add Accommodation
+              </a>
+            </div>
+            <div class="mb-4">
+              <form method="GET" action="">
+                <div class="row">
+                  <div class="col-md-4">
+                    <input type="text" name="search_query" class="form-control" placeholder="Search by Name, Location, etc." value="{{ request.GET.search_query }}">
+                  </div>
+                  <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                  </div>
+                  <div class="col-md-4">
+                    <select name="sort" class="form-control" onchange="this.form.submit()">
+                      <option value="">Sort By</option>
+                      <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name</option>
+                      <option value="price_per_night" {% if request.GET.sort == 'price_per_night' %}selected{% endif %}>Price per Night</option>
+                      <option value="type_of_accommodation" {% if request.GET.sort == 'type_of_accommodation' %}selected{% endif %}>Type</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+            
+            {% if messages %}
+            <div class="alert alert-success" id="success-message">
+              {% for message in messages %}
+                {{ message }}
+              {% endfor %}
+            </div>
+            {% endif %}
+            <div>
+                <a href="{% url 'accommodation:download_pdf' %}" class="btn btn-primary">Download PDF</a>
+            </div>
+            <table class="table">
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col">Image</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Location</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Price per Night</th>
+                  <th scope="col">Actions</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                {% for accommodation in accommodations %}
+                <tr>
+                  <td>
+                    {% if accommodation.image %}
+                        <img src="{{ MEDIA_URL }}{{ accommodation.image }}" alt="{{ accommodation.accommodation_name }}" style="width: 80px; height: 80px; object-fit: cover;">
+                    {% else %}
+                    <img src="{% static 'backOffice/assets/images/accommodation_images/default_accommodation.png' %}" alt="Default accommodation Image" class="img-thumbnail" style="max-width: 150px;">
+                    {% endif %}
+                </td>                  <td>{{ accommodation.name }}</td>
+                  <td>{{ accommodation.location }}</td>
+                  <td>{{ accommodation.type_of_accommodation }}</td>
+                  <td>{{ accommodation.price_per_night }}</td>
+                  
+                  <td class="d-flex ms-2">
+                    <a href="{% url 'accommodation:accommodation_detail' accommodation.id %}" class="btn btn-primary">
+                      <i data-feather="eye" class="icon-xxs"></i> View details
+                    </a>                    
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="7" class="text-center">No accommodations found.</td> 
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <div class="pagination-container mt-4">
+              <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                  {% if page_obj.has_previous %}
+                    <li class="page-item">
+                      <a class="page-link" href="?page=1&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                      </a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                      <a class="page-link" href="?page={{ num }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}">{{ num }}</a>
+                    </li>
+                  {% endfor %}
+                  {% if page_obj.has_next %}
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.next_page_number }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </nav>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {% include "backOffice/partials/scripts.html" %}
+  <script>
+    setTimeout(function() {
+      var messageElement = document.getElementById('success-message');
+      if (messageElement) {
+        messageElement.style.display = 'none'; // Hide the message
+      }
+    }, 3000); // 3000 milliseconds = 3 seconds
+  </script>
+</body>
+
+</html>

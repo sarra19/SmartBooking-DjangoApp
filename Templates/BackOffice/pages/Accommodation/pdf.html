@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Télécharger un hébergement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 10px;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 12px;
+            color: #888;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #34495e;
+        }
+    </style>
+</head>
+<body>
+    <h1>Télécharger un hébergement</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Nom de l'hébergement:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="location">Emplacement:</label>
+            <input type="text" id="location" name="location" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="type_of_accommodation">Type d'hébergement:</label>
+            <select id="type_of_accommodation" name="type_of_accommodation" required>
+                <option value="Hotel Room">Chambre d'Hôtel</option>
+                <option value="House">Maison</option>
+                <option value="Apartment">Appartement</option>
+                <option value="Villa">Villa</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="price_per_night">Prix par nuit:</label>
+            <input type="number" id="price_per_night" name="price_per_night" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label for="amenities">Commodités:</label>
+            <select id="amenities" name="amenities" multiple required>
+                <option value="Wi-Fi">Wi-Fi</option>
+                <option value="Pool">Piscine</option>
+                <option value="Parking">Parking</option>
+                <option value="Gym">Salle de sport</option>
+                <option value="Breakfast">Petit-déjeuner</option>
+                <option value="Air Conditioning">Climatisation</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Image de l'hébergement:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+        </div>
+
+        <div class="form-group">
+            <label for="pdf_file">Télécharger un PDF:</label>
+            <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf" required>
+        </div>
+
+        <button type="submit">Soumettre</button>
+    </form>
+
+    <div class="footer">
+        Contact: info@example.com
+    </div>
+</body>
+</html>

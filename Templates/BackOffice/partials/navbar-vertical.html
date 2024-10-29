@@ -190,25 +190,15 @@
         </ul>
     </div>
 </li>
-<li class="nav-item">
-    <a class="nav-link has-arrow {% if context.page_group != 'accommodations' %}collapsed{% endif %}" href="#!" data-bs-toggle="collapse" data-bs-target="#navAccommodations" aria-expanded="{% if context.page_group == 'accommodations' %}true{% else %}false{% endif %}" aria-controls="navAccommodations">
-        <i data-feather="lock" class="nav-icon icon-xs me-2"></i> Accommodations
-    </a>
-    <div id="navAccommodations" class="collapse {% if context.page_group == 'accommodations' %}show{% endif %}" data-bs-parent="#sideNavbar">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link {% if context.page == 'signin' %}active{% endif %}" href="{% url 'back:layout' %}">Layouts</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if context.page == 'signup' %}active{% endif %}" href="{% url 'back:signup' %}">Sign Up</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if context.page == 'forgetpassword' %}active{% endif %}" href="{% url 'back:forgetpassword' %}">Forget Password</a>
-            </li>
-        </ul>
-    </div>
-</li>
 
+<li class="nav-item">
+    <a class="nav-link has-arrow {% if context.page == 'docs' %}active{% endif %}" href="{% url 'accommodation:accommodation_list' %}">
+        <i data-feather="layers" class="nav-icon icon-xs me-2" >
+    </i>  Accommodations
+    </a>
+ </li>
+
+  
 
 
                            

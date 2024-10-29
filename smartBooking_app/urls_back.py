@@ -16,7 +16,8 @@ urlpatterns = [
     path('forgetpassword/', views.forget_password, name='forgetpassword'),
     path('docs/', views.docs, name='docs'),
     path('faq/', views.faq, name='faq'),
-    path('layout/', views.layout, name='layout'),
+    # path('layout/', views.layout, name='layout'),
+    # path('accommodations/add/', views.add_accommodation, name='add_accommodation'),
 # docs
     path('accordions/', views.accordions, name='accordions'),
      path('alerts/', views.alerts, name='alerts'),

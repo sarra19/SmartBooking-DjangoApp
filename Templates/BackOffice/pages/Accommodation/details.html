@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include 'backOffice/partials/head.html' %}
+  <link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM4c5VJ1qQ4eE2jI2M6f4k99d9+U3p1m6pY2jH" crossorigin="anonymous">
+  <title>Détails de l'Hébergement</title>
+</head>
+
+<body class="bg-light">
+  <div id="db-wrapper">
+    {% include 'backOffice/partials/navbar-vertical.html' with page="Détails de l'Hébergement" page_group="accommodation" %}
+    
+    <div id="page-content">
+      {% include 'backOffice/partials/header.html' %}
+      <div class="container-fluid p-6">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-12">
+            <div class="border-bottom pb-4 mb-4">
+              <h3 class="mb-0 fw-bold">Détails de l'Hébergement</h3>
+            </div>
+            <div class="card shadow-sm mb-4">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0 text-white">Informations sur l'Hébergement</h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <strong>Nom de l'Hébergement:</strong> <span class="text-muted">{{ accommodation.name }}</span>
+                </div>
+                <div class="mb-3">
+                  <strong>Description:</strong>
+                  <p class="text-muted">{{ accommodation.description }}</p>
+                </div>
+                <div class="mb-3">
+                  <strong>Équipements:</strong> <span class="text-muted">{{ accommodation.amenities }}</span>
+                </div>
+                
+              </div>
+              <div class="card-footer text-end">
+                <a href="{% url 'accommodation:accommodation_update' accommodation.id %}" class="btn btn-warning">
+                  <i data-feather="edit" class="icon-xxs"></i> Modifier
+                </a>
+                <a href="{% url 'accommodation:accommodation_delete' accommodation.id %}" class="btn btn-danger">
+                  <i data-feather="trash-2" class="icon-xxs"></i> Supprimer
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {% include "backOffice/partials/scripts.html" %}
+
+</body>
+
+</html>

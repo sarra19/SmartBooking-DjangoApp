@@ -11,8 +11,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('Flight', '0001_initial'),
         ('Accommodation', '0001_initial'),
-        ('RentalTransport', '0001_initial'),
-        ('Event', '0001_initial'),
+#        ('Event', '0001_initial'),
     ]
 
     operations = [
