@@ -13,6 +13,7 @@ urlpatterns = [
 
     path('update-reservationEvent/<int:pk>/', views.UpdateReservationEventView.as_view(), name='update_reservationE'),  
     path('update-reservationEventf/<int:pk>/', views.UpdateReservationEventfView.as_view(), name='update_reservationEf'),  
+    path('update-reservationAccf/<int:pk>/', views.UpdateReservationAccfView.as_view(), name='update_reservationAf'),  
 
     path('delete-reservation/<int:pk>/', views.delete_reservation.as_view(), name='delete_reservation'),  
     path('details_reservation/<int:pk>/', views.detailsReservation, name='details_reservation'), 
@@ -36,10 +37,11 @@ urlpatterns = [
      path('RsvFrontEvent/<int:ek>/addReservation', views.AddRsvEventfront.as_view(), name='RsvFrontEvent'),  # Use as_view() for class-based views
 #accommodation
      path('accommodationfront/', views.RsvAccommodationFront.as_view(), name='accommodationfront'),  # Use as_view() for class-based views
-     path('Rsv-flight-front/<int:ack>/AccomodationAdd', views.AddRsvfrontAcc.as_view(), name='Rsv-frontAcc'),  # Use as_view() for class-based views
 
+     path('RsvFront/<int:ack>/addReservation', views.addRAccFront.as_view(), name='addRAccFront'),  # Use as_view() for class-based views
 
 path('reservations/pdf/', views.reservations_pdf, name='reservations_pdf'),
+         path('generate-transcription/', views.generate_transcript, name='generate-transcription'),
 
 
 path('accept/<int:id>/', views.accept_reservation, name='accept_reservation'),

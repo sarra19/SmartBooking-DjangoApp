@@ -3,120 +3,168 @@
 
 {% block content %}
 
-    <!-- Header Start -->
-    <div class="container-fluid bg-breadcrumb">
-        <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">Event</h3>
-            <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{% url 'front:indexF' %}">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                <li class="breadcrumb-item active text-white">Add Your Information</li>
-            </ol>    
-        </div>
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="text-white display-3 mb-4">Event</h3>
+        <ol class="breadcrumb justify-content-center mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'front:indexF' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item active text-white">Add Your Information</li>
+        </ol>
     </div>
-    <!-- Header End -->
+</div>
+<!-- Header End -->
 
-    <!-- Reservation Form Start -->
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-lg-8 col-md-10 col-12 mx-auto">
-                <h2 class="text-black text-center mb-4">Add Your Reservation</h2>
+<!-- Reservation Form Start -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 col-12 mx-auto">
+            <h2 class="text-black text-center mb-4">Add Your Reservation</h2>
 
-                {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {% for error in form.non_field_errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                
+                <!-- Reservation Details Card -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Reservation Details</h5>
                     </div>
-                {% endif %}
+                    
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Reservation Name -->
+                            <div class="col-md-6">
+                                {{ form.name_reservation.label_tag }}
+                                {{ form.name_reservation }}
+                            </div>
 
-                <form class="needs-validation" method="POST" novalidate>
-                    {% csrf_token %}
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Reservation Details</h5>
-                        </div>
-                        
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <!-- Reservation Name -->
-                                <div class="col-md-6">
-                                    {{ form.name_reservation.label_tag }}
-                                    {{ form.name_reservation }}
-                                </div>
+                            <!-- CIN -->
+                            <div class="col-md-6">
+                                {{ form.cin.label_tag }}
+                                {{ form.cin }}
+                            </div>
 
-                                <!-- CIN -->
-                                <div class="col-md-6">
-                                    {{ form.cin.label_tag }}
-                                    {{ form.cin }}
-                                </div>
+                            <!-- Phone Number -->
+                            <div class="col-md-6">
+                                {{ form.phone_number.label_tag }}
+                                {{ form.phone_number }}
+                            </div>
 
-                                <!-- Phone Number -->
-                                <div class="col-md-6">
-                                    {{ form.phone_number.label_tag }}
-                                    {{ form.phone_number }}
-                                </div>
-
-                                <!-- Special Requests -->
-                                <div class="col-12">
-                                    {{ form.special_requests.label_tag }}
-                                    {{ form.special_requests }}
-                                </div>
-                                
-                                <!-- Status Selection -->
-                                <div class="col-md-6">
-                                    {{ form.status.label_tag }}
-                                    {{ form.status }}
-                                </div>
+                            <!-- Special Requests -->
+                            <div class="col-12">
+                                {{ form.special_requests.label_tag }}
+                                {{ form.special_requests }}
+                            </div>
+                            
+                            <!-- Status Selection -->
+                            <div class="col-md-6">
+                                {{ form.status.label_tag }}
+                                {{ form.status }}
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="text-center my-4">
+                    <p class="instruction-text">
+                        <strong>✉️ You can express your request by typing or sending a voice message! 🎤 </strong>
+                    </p>
+                </div>                <!-- Prompt and Audio Upload Fields -->
+                <div class="mb-3">
+                    {{ form.prompt.label_tag }}
+                    {{ form.prompt }}
+                </div>
 
-                    <!-- Prompt Field -->
-                    <div class="col-12">
-                        {{ form.prompt.label_tag }}
-                        {{ form.prompt }}
-                    </div>
-                    
-                    <div class="d-grid mt-3 mb-3" style="text-align: right;">
-                        <button type="button" class="btn btn-info btn-sm" id="generate-reservinfo" style="padding: 0.25rem 0.5rem; max-width: 150px;">
-                            Generate your infos
-                        </button>
-                    </div>
+                 <!-- Generate Infos Button -->
+            <div class="text-end mt-3">
+                <button type="button" class="btn btn-info btn-sm" id="generate-reservinfo">
+                    Generate your infos
+                </button>
+            </div>
+                <div class="mb-3">
+                    <label for="audioFile">Upload Audio</label>
+                    <input type="file" name="audio_file" id="audioFile" accept="audio/*" required>
+                </div>
 
-                    <!-- Submit Button -->
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg" style="transition: background-color 0.3s, transform 0.3s;">Save Reservation</button>
-                    </div>
-                </form>
-                
+               
+            
+                <div class="mb-3">
+
+             <!-- Button Actions -->
+             <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-info" id="generate-transcript">Transcribe & Fill</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </div>
-    </div>
-    <!-- Reservation Form End -->
 
-    <script>
-        document.getElementById('generate-reservinfo').addEventListener('click', function () {
-            const prompt = document.getElementById('{{ form.prompt.id_for_label }}').value;
-            fetch('{% url "reservation:generate-reservinfo" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ prompt: prompt })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.reservation_details) {
-                    document.getElementById('{{ form.name_reservation.id_for_label }}').value = data.reservation_details.name_reservation;
-                    document.getElementById('{{ form.cin.id_for_label }}').value = data.reservation_details.cin;
-                    document.getElementById('{{ form.phone_number.id_for_label }}').value = data.reservation_details.phone_number;
-                    document.getElementById('{{ form.special_requests.id_for_label }}').value = data.reservation_details.special_requests;
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        });
-    </script>
+        </form>
+        </div>
+    </div>
+</div>
+<!-- Reservation Form End -->
+
+<script>
+    // Fetch reservation details from text prompt
+    document.getElementById('generate-reservinfo').addEventListener('click', function () {
+        const prompt = document.getElementById('{{ form.prompt.id_for_label }}').value;
+        
+        fetch('{% url "reservation:generate-reservinfo" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ prompt: prompt })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.reservation_details) {
+                document.getElementById('{{ form.name_reservation.id_for_label }}').value = data.reservation_details.name_reservation;
+                document.getElementById('{{ form.cin.id_for_label }}').value = data.reservation_details.cin;
+                document.getElementById('{{ form.phone_number.id_for_label }}').value = data.reservation_details.phone_number;
+                document.getElementById('{{ form.special_requests.id_for_label }}').value = data.reservation_details.special_requests;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+   // Fetch transcription data from audio file
+document.getElementById('generate-transcript').addEventListener('click', function () {
+    const formData = new FormData();
+    formData.append('audio_file', document.getElementById('audioFile').files[0]);
+    
+    fetch('{% url "reservation:generate-transcription" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Transcription response data:', data); // Log data for debugging
+        
+        // Check if reservation_data exists in the response
+        if (data.reservation_details) {
+            document.getElementById('{{ form.name_reservation.id_for_label }}').value = data.reservation_details.name_reservation;
+            document.getElementById('{{ form.cin.id_for_label }}').value = data.reservation_details.cin;
+            document.getElementById('{{ form.phone_number.id_for_label }}').value = data.reservation_details.phone_number;
+            document.getElementById('{{ form.special_requests.id_for_label }}').value = data.reservation_details.special_requests;
+        } else {
+            console.error('No reservation details found in response');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+</script>
 
 {% endblock %}

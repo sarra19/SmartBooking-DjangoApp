@@ -63,8 +63,7 @@ class ReservationForm(forms.ModelForm):
         elif (id_flight or id_accommodation):
             if not number_of_travelers:
                 raise ValidationError("Specify the number of travelers when choosing a flight or accommodation.")
-            if len(passport_numbers) != int(number_of_travelers):
-                raise ValidationError("Provide exactly one passport number per traveler.")
+           
             for number in passport_numbers:
                 if len(number.strip()) != 8:
                     raise ValidationError("Each passport number must be exactly 8 characters.")

@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from xhtml2pdf import pisa
 from django.http import HttpResponse
 from django.template.loader import get_template
-
+import io
 import json
 import requests
 from django.http import JsonResponse
@@ -21,8 +21,10 @@ from django.conf import settings
 import requests
 import os
 import google.generativeai as genai
+import types
 
-
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
 import re
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
@@ -63,6 +65,80 @@ def ai_generate_reservinfo(prompt):
         'reservinfo': "Reservation Info Generated",  # Placeholder for any generated info
         'reservation_details': reservation_data
     }
+
+
+# ***********
+model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+@csrf_exempt
+def generate_transcript(request):
+    if request.method == 'POST':
+        audio_file = request.FILES.get('audio_file')
+
+        # Vérifier si le fichier audio est fourni
+        if not audio_file:
+            return JsonResponse({'error': 'Aucun fichier audio fourni'}, status=400)
+
+        # Vérifier le type de fichier
+        allowed_types = ['audio/wav', 'audio/mpeg', 'audio/mp3']
+        if audio_file.content_type not in allowed_types:
+            return JsonResponse({'error': 'Type de fichier non pris en charge'}, status=400)
+
+        # Sauvegarder temporairement le fichier pour éviter les problèmes de format
+        try:
+            temp_path = default_storage.save(f'temp/{audio_file.name}', audio_file)
+            temp_file_path = default_storage.path(temp_path)
+        except Exception as e:
+            return JsonResponse({'error': f'Échec de l\'enregistrement du fichier: {str(e)}'}, status=500)
+
+        try:
+            # Charger et lire le fichier audio pour la transcription
+            with open(temp_file_path, 'rb') as f:
+                audio_data = f.read()
+
+            # Simuler la transcription pour cet exemple
+            transcription_text = "My name is John Doe, my CIN is 12345678, my phone number is 9876543210, special request: near window."
+
+            # Nettoyage du fichier temporaire après traitement
+            default_storage.delete(temp_path)
+
+            # Extraire les informations de réservation
+            reservation_info = ai_generate_transcript(transcription_text)
+
+            return JsonResponse(reservation_info, status=200)
+
+        except Exception as e:
+            return JsonResponse({'error': f'Erreur lors de la transcription: {str(e)}'}, status=500)
+
+    return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
+
+def ai_generate_transcript(transcript):
+    if not isinstance(transcript, str) or not transcript.strip():
+        return {'text': 'Error', 'message': 'Invalid input: transcript is required and must be a string.'}
+
+    # Extraire les détails de réservation à l'aide d'expressions régulières
+    name_reservation = re.search(r"my name is\s*([\w\s]+)", transcript, re.IGNORECASE)
+    cin = re.search(r"my CIN is\s*(\d+)", transcript, re.IGNORECASE)
+    phone_number = re.search(r"my phone number is\s*(\d+)", transcript, re.IGNORECASE)
+    special_requests = re.search(r"special request\s*:\s*(.+)", transcript, re.IGNORECASE)
+
+    reservation_data = {
+        'name_reservation': name_reservation.group(1) if name_reservation else 'Unknown',
+        'cin': cin.group(1) if cin else 'Unknown',
+        'phone_number': phone_number.group(1) if phone_number else 'Unknown',
+        'special_requests': special_requests.group(1) if special_requests else 'None'
+    }
+
+    return {
+        'text': 'Reservation generated.',
+        'message': 'Reservation successfully added.',
+        'reservinfo': "Reservation Info Generated",
+        'reservation_details': reservation_data
+    }
+
+
+
+
+
 
 class RsvEventFront(ListView):
     model = Event  #
@@ -258,7 +334,33 @@ class UpdateReservationEventfView(UpdateView):
         # Now save the reservation
         reservation.save()
 
-        messages.success(self.request, "Flight reservation updated successfully!")
+        messages.success(self.request, "reservation updated successfully!")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "There was an error updating the reservation. Please check the details and try again.")
+        return super().form_invalid(form)
+    
+class UpdateReservationAccfView(UpdateView):
+    model = Reservation
+    template_name = 'frontOffice/pages/Reservation/updateAccf.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy('reservation:myreservation', args=[1])
+
+    def form_valid(self, form):
+        # First, save the reservation instance but don't commit yet
+        reservation = form.save(commit=False)
+
+        # Process passport numbers from the request
+        passport_numbers = self.request.POST.getlist('passport_numbers[]')
+
+        # Update the passport_numbers field with the new list
+        reservation.passport_numbers = passport_numbers  # Save the list directly
+
+        # Now save the reservation
+        reservation.save()
+
+        messages.success(self.request, "reservation updated successfully!")
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -417,6 +519,30 @@ class AddRsvEventfront(CreateView):
         context = super().get_context_data(**kwargs)
         event_id = self.kwargs['ek']
         context['event'] = get_object_or_404(Event, id=event_id)  
+        return context
+
+class addRAccFront(CreateView):
+    model = Reservation
+    template_name = 'frontOffice/pages/Reservation/addRAcc.html'
+    form_class = ReservationForm
+    #userid
+    success_url = reverse_lazy('reservation:myreservation', args=[1])  #userid
+
+    def form_valid(self, form):
+        accommodation_id = self.kwargs['ack']  
+        reservation = form.save(commit=False)
+        reservation.id_accommodation = get_object_or_404(Accommodation, id=accommodation_id) 
+        reservation.save()
+
+        messages.success(self.request, "Reservation added successfully!")  
+        return super().form_valid(form)
+
+   
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        accommodation_id = self.kwargs['ack']
+        context['accommodation'] = get_object_or_404(Accommodation, id=accommodation_id)  
         return context
     
 

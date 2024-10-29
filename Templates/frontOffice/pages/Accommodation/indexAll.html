@@ -36,7 +36,7 @@
                             <p class="card-text"><strong>Type:</strong> {{ accommodation.type_of_accommodation }}</p>
                             <p class="card-text"><strong>Price per Night:</strong> ${{ accommodation.price_per_night }}</p>
                             <p class="card-text"><strong>Amenities:</strong> {{ accommodation.amenities.all|join:", " }}</p>
-                            <a href="{% url 'reservation:Rsv-frontAcc' accommodation.id %}" class="btn btn-success mt-2">Reserve</a>  <!-- Reserve Button -->
+                            <a href="{% url 'reservation:addRAccFront' accommodation.id %}" class="btn btn-success mt-2">Reserve</a>  <!-- Reserve Button -->
                         </div>
                     </div>
                 </div>
