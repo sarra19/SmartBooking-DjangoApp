@@ -74,6 +74,9 @@
             <div id="navFlights" class="collapse {% if context.page_group == 'flights' %}show{% endif %}" data-bs-parent="#sideNavbar">
                 <ul class="nav flex-column">
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'Flight:flight_list' %}">List of Flights</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {% if context.page == 'flights_profile' %}active{% endif %}" href="{% url 'back:profile' %}">
                             Profile
                         </a>

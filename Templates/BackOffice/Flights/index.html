@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+    <title>List of Flights | Dash Ui - Bootstrap 5 Admin Dashboard Template</title>
+    <style>
+        /* Appliquer une couleur de fond bleu pour le header */
+        .bg-primary {
+            background-color: #007bff !important; /* Fond bleu */
+        }
+
+        /* Titre en blanc */
+        h1 {
+            color: white !important; /* Couleur blanche pour le titre avec priorité */
+        }
+
+        /* Garder le tableau avec un fond blanc */
+        table {
+            width: 100%; /* Utiliser toute la largeur disponible */
+            margin-bottom: 1rem; /* Réduire l'espace sous le tableau */
+            border-collapse: collapse; /* Fusionner les bordures */
+            background-color: white; /* Fond blanc pour le tableau */
+        }
+
+        /* Couleur blanche pour les cellules de données */
+        .table thead td {
+            padding: 4px; /* Réduire le rembourrage pour chaque cellule */
+            text-align: left; /* Alignement à gauche */
+            border: 1px solid #717274; /* Ajouter des bordures autour des cellules */
+            font-size: 14px; /* Ajuster la taille de la police si nécessaire */
+            background-color: white; /* Fond blanc pour les cellules de données */
+        }
+
+        /* En-tête avec un fond gris */
+        .table th {
+            background-color: #e6e2e2; /* Gris pour le fond des en-têtes */
+            padding: 10px 15px; /* Diminue la hauteur en réduisant les marges internes */
+            color: #ffffff; /* Couleur du texte en blanc */
+            text-align: center; /* Alignement du texte au centre */
+            border: none; /* Aucune bordure pour les cellules d'en-tête */
+        }
+
+        /* Ajuster les largeurs des colonnes pour éviter les débordements */
+        th:nth-child(1), td:nth-child(1) { width: 60px; } /* Image */
+        th:nth-child(2), td:nth-child(2) { width: 100px; } /* Compagnie aérienne */
+        th:nth-child(3), td:nth-child(3) { width: 100px; } /* Nom du vol */
+        th:nth-child(4), td:nth-child(4) { width: 80px; } /* Numéro du vol */
+        th:nth-child(5), td:nth-child(5) { width: 100px; } /* Ville de départ */
+        th:nth-child(6), td:nth-child(6) { width: 100px; } /* Ville d'arrivée */
+        th:nth-child(7), td:nth-child(7) { width: 100px; } /* Date de départ */
+        th:nth-child(8), td:nth-child(8) { width: 100px; } /* Date d'arrivée */
+        th:nth-child(9), td:nth-child(9) { width: 80px; } /* Prix par place */
+        th:nth-child(10), td:nth-child(10) { width: 80px; } /* Places disponibles */
+        th:nth-child(11), td:nth-child(11) { width: 80px; } /* Actions */
+
+        /* Centrer le tableau */
+        .table-container {
+            display: flex;
+            justify-content: center; /* Centre le tableau horizontalement */
+        }
+
+        .table {
+            max-width: 90%; /* Limite la largeur maximale du tableau */
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div id="db-wrapper">
+        <!-- navbar vertical -->
+        {% include 'BackOffice/partials/navbar-vertical.html' with page="dashboard" %}
+        <!-- Page content -->
+        <div id="page-content">
+            {% include 'BackOffice/partials/header.html' %}
+            <div class="bg-primary pt-10 pb-21"></div> <!-- Fond bleu -->
+            <div class="container-fluid mt-n22 px-6">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-12">
+                        <!-- Page header -->
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="mb-2 mb-lg-0">
+                                    <h1>List of Flights</h1> <!-- Titre en blanc -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4"></div> <!-- Ajouter un div pour l'espace -->
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <!-- Formulaire combiné à gauche -->
+                        <div class="col-md-6">
+                            <form method="GET" action="{% url 'Flight:flight_list' %}" class="d-flex">
+                                <div class="input-group me-2">
+                                    <input type="text" name="q" class="form-control" placeholder="Search flights" value="{{ request.GET.q }}">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-group-text" for="sort">Sort by</label>
+                                    <select class="form-select" name="sort" id="sort" onchange="this.form.submit()">
+                                        <option value="departure_date" {% if sort_by == 'departure_date' %}selected{% endif %}>Departure Date</option>
+                                        <option value="arrival_date" {% if sort_by == 'arrival_date' %}selected{% endif %}>Arrival Date</option>
+                                        <option value="flight_number" {% if sort_by == 'flight_number' %}selected{% endif %}>Flight Number</option>
+                                        <option value="price_per_place" {% if sort_by == 'price_per_place' %}selected{% endif %}>Price Per Place</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Bouton Create New Flight à droite -->
+                        <div class="col-md-4 text-end">
+                            <a href="{% url 'Flight:download_flights_pdf' %}" class="btn btn-secondary">Download PDF</a>
+
+                            <a href="{% url 'Flight:flight_create' %}" class="btn btn-primary">Create New Flight</a>
+
+                        </div>
+                    </div>
+
+                  
+                    <!-- Conteneur du tableau centré -->
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Airline</th>
+                                    <th>Flight Name</th>
+                                    <th>Flight Number</th>
+                                    <th>Departure City</th>
+                                    <th>Arrival City</th>
+                                    <th>Departure Date</th>
+                                    <th>Arrival Date</th>
+                                    <th>Price Per Place</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for flight in flights %}
+                                <tr>
+                                    <td>
+                                        {% if flight.image %}
+                                        <!-- <img src="{% static 'backOffice/assets/images/' %}{{ flight.image }}" alt="{{ flight.flight_name }}" style="width: 100px; height: 100px;"> -->
+                                        <img src="{{ flight.image.url }}" alt="{{ flight.flight_name }}" style="width: 100px; height: 100px;">
+                                        {% else %}
+                                            No Image
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ flight.airline }}</td>
+                                    <td>{{ flight.flight_name }}</td>
+                                    <td>{{ flight.flight_number }}</td>
+                                    <td>{{ flight.departure_city }}</td>
+                                    <td>{{ flight.arrival_city }}</td>
+                                    <td>{{ flight.departure_date }}</td>
+                                    <td>{{ flight.arrival_date }}</td>
+                                    <td>{{ flight.price_per_place }}DT</td>
+                                    <td>
+                                        <div class="d-flex justify-content-around">
+                                            <a href="{% url 'Flight:flight_update' flight.id %}" class="btn btn-warning btn-sm me-1">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form method="post" action="{% url 'Flight:flight_delete' flight.id %}" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+              
+                    <div class="pagination-container mt-4">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                {% if is_paginated %}
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1&q={{ request.GET.q }}&sort={{ request.GET.sort }}" aria-label="First">
+                                                <span aria-hidden="true">&laquo;&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% for num in page_obj.paginator.page_range %}
+                                        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                            <a class="page-link" href="?page={{ num }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}">{{ num }}</a>
+                                        </li>
+                                    {% endfor %}
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ request.GET.q }}&sort={{ request.GET.sort }}" aria-label="Last">
+                                                <span aria-hidden="true">&raquo;&raquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                      
+ 
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
