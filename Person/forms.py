@@ -133,3 +133,8 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     class Meta:
         model = None  # Pas besoin de définir un modèle ici
         fields = ['old_password', 'new_password1', 'new_password2']
+
+
+
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField(label="Email", max_length=254)

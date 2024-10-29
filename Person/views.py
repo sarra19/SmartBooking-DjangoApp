@@ -9,6 +9,23 @@ from .forms import PersonForm
 from .forms import UpdatePersonForm , PersonUpdateProfileForm , CustomPasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.views.generic.edit import FormView
+from django.urls import reverse_lazy
+from .forms import PasswordResetRequestForm
+from django.contrib.auth.forms import SetPasswordForm
+from django.utils.http import urlsafe_base64_decode
+# from django.utils.encoding import force_text
+from django.utils.encoding import force_str
+from django.views.generic import View
+from django.urls import reverse
+from django.conf import settings
+
 
 def register(request):
     if request.user.is_authenticated:
@@ -157,3 +174,88 @@ def settingsProfile(request):
         'password_form': password_form,
     })
 
+User = get_user_model()
+
+class PasswordResetRequestView(FormView):
+    template_name = 'frontOffice/person/password_reset.html'
+    form_class = PasswordResetRequestForm
+    success_url = reverse_lazy('password_reset_done')  
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        associated_users = User.objects.filter(email=email)
+        if associated_users.exists():
+            for user in associated_users:
+                subject = "Demande de réinitialisation de mot de passe"
+                email_template_name = "frontOffice/person/password_reset_email.html"
+                context = {
+                    "email": user.email,  
+                    'domain': get_current_site(self.request).domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),  
+                    'token': default_token_generator.make_token(user),  
+                    'protocol': 'http',
+                }
+                email = render_to_string(email_template_name, context)
+                send_mail(subject, email, settings.DEFAULT_FROM_EMAIL, [user.email])  
+        print(f"Redirection vers: {self.success_url}")
+        return super().form_valid(form)
+
+class PasswordResetConfirmView(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            form = SetPasswordForm(user=user)
+            return render(request, 'frontOffice/person/password_reset_confirm.html', {'form': form})
+        else:
+            return redirect('password_reset_invalid')
+
+    def post(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        form = SetPasswordForm(user=user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('password_reset_complete')
+        return render(request, 'frontOffice/person/password_reset_confirm.html', {'form': form})
+
+def password_reset_request_view(request):
+    if request.method == "POST":
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            try:
+                user = User.objects.get(email=email)
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                
+                reset_url = request.build_absolute_uri(
+                    reverse("password_reset_confirm", args=[uid, token])
+                )
+                
+                subject = "Réinitialisation de votre mot de passe"
+                message = render_to_string("frontOffice/person/password_reset_email.html", {
+                    "reset_url": reset_url,
+                    "user": user,
+                })
+                
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+                return redirect("password_reset_complete")
+            except User.DoesNotExist:
+                form.add_error("email", "Aucun compte associé à cet email.")
+    else:
+        form = PasswordResetRequestForm()
+    
+    return render(request, "frontOffice/person/password_reset_form.html", {"form": form})
+
+
+def password_reset_done(request):
+    return render(request, "frontOffice/person/password_reset_done.html")

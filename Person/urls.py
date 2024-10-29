@@ -13,5 +13,9 @@ urlpatterns = [
     path('settings/', settings_view, name='settings_view'),
     path('remove-avatar/', remove_avatar, name='remove_avatar'),
     path('settingsProfile/', settingsProfile, name='settingsProfile'),
+    path("password_reset/", PasswordResetRequestView.as_view(), name="password_reset"),
+    path("password_reset/done/", password_reset_done, name="password_reset_done"),
+    path("reset/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+    path("reset/done/", password_reset_done, name="password_reset_complete"),
 
-] 
+]
