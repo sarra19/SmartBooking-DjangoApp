@@ -106,13 +106,6 @@
                       <div class="mb-3">
                         <label for="keyword" class="form-label mr-2">Keyword</label>
                         {{ form.keyword }}
-                        {% if form.keyword.errors %}
-                        <div class="text-danger">
-                          {% for error in form.keyword.errors %}
-                          <small>{{ error }}</small>
-                          {% endfor %}
-                        </div>
-                        {% endif %}
                       </div>
                     </div>
                     <div>

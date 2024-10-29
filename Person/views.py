@@ -44,15 +44,18 @@ def register(request):
 
     if request.method =="POST":
         form = UserRegisterForm(request.POST)
+
         if form.is_valid():
-            
             user = form.save()
             login(request,user)
             
             return redirect("front:indexF")
         else:
             print("Registration failed")
-                
+
+            for field, errors in form.errors.items():
+                for error in errors:
+                    print(f"Error in {field}: {error}")
     else:        
         form = UserRegisterForm()
         
@@ -76,7 +79,7 @@ def Login_user(request):
         
         else:
             messages.info(request,"Username or password incorrect")
-            return redirect("login")
+            return redirect("front:login")
         
     else: 
         return render(request, "frontOffice/person/login.html")
@@ -138,15 +141,20 @@ def settingsProfile(request):
                 form.save()  
                 messages.success(request, 'Your profile was successfully updated!')
                 return redirect('front:settingsProfile')
+            else:
+                password_form = CustomPasswordChangeForm(user=user) 
+
         elif 'change_password' in request.POST: 
             password_form = CustomPasswordChangeForm(user=user, data=request.POST)  
             if password_form.is_valid():
                 user = password_form.save()  
                 update_session_auth_hash(request, user)  
-                messages.success(request, 'Your password has been successfully updated !')
+                messages.success(request, 'Your password has been successfully updated!')
                 return redirect('front:settingsProfile') 
             else:
+                form = PersonUpdateProfileForm(instance=user)
                 messages.error(request, 'Please correct the error below.')
+
         elif 'delete_account' in request.POST: 
             user.delete() 
             messages.success(request, 'Your account has been successfully deleted.')
@@ -159,6 +167,7 @@ def settingsProfile(request):
         'form': form,
         'password_form': password_form,
     })
+
 
 User = get_user_model()
 
@@ -247,145 +256,7 @@ def password_reset_done(request):
     return render(request, "frontOffice/person/password_reset_done.html")
 
 
-# def compare_faces(request):
-#     # URL des images pour la comparaison
-#     image_url_1 = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Mohanlal_Viswanathan_Nair_BNC.jpg/240px-Mohanlal_Viswanathan_Nair_BNC.jpg"
-#     image_url_2 = "https://www.thenewsminute.com/sites/default/files/styles/news_detail/public/Mohanlal_DN_0.jpg?itok=rosZJnyx"
-
-#     payload = f"""-----011000010111000001101001\r\n
-#     Content-Disposition: form-data; name="img_1"\r\n\r\n{image_url_1}\r\n
-#     -----011000010111000001101001\r\n
-#     Content-Disposition: form-data; name="img_2"\r\n\r\n{image_url_2}\r\n
-#     -----011000010111000001101001--\r\n\r\n"""
-
-#     headers = {
-#         'x-rapidapi-key': settings.FACEX_API_KEY,
-#         'x-rapidapi-host': settings.FACEX_API_HOST,
-#         'Content-Type': "multipart/form-data; boundary=---011000010111000001101001",
-#         'user_id': settings.FACEX_USER_ID,
-#         'user_key': settings.FACEX_USER_KEY
-#     }
-
-#     # Connexion et requête
-#     conn = http.client.HTTPSConnection(settings.FACEX_API_HOST)
-#     conn.request("POST", settings.FACEX_COMPARE_PATH, payload, headers)
-
-#     res = conn.getresponse()
-#     data = res.read()
-#     conn.close()
-
-#     # Affichage des résultats de l'API
-#     return JsonResponse({"result": data.decode("utf-8")})
-
-
-# def login_with_face(request):
-#     if request.method == "POST":
-#         # Récupérer l'image soumise par l'utilisateur pour le login
-#         face_image = request.FILES['face_image']
-
-#         # URL de l'API et entêtes d’authentification
-#         url = "https://facex-facex-v1.p.rapidapi.com/compare_faces"
-#         headers = {
-#             "x-rapidapi-key": settings.FACEX_API_KEY,
-#             "x-rapidapi-host": "facex-facex-v1.p.rapidapi.com",
-#             "Content-Type": "multipart/form-data",
-#             "user_id": settings.FACEX_USER_ID ,
-#             "user_key": settings.FACEX_USER_KEY,
-#         }
-
-#         # Parcourir les utilisateurs pour trouver un match avec l’image faciale
-#         for person in Person.objects.filter(face_image__isnull=False):
-#             files = {
-#                 "img_1": face_image,
-#                 "img_2": person.face_image.url,  # URL de l’image de référence enregistrée
-#             }
-            
-#             # Envoi de la requête pour comparaison des visages
-#             response = requests.post(url, headers=headers, files=files)
-            
-#             if response.status_code == 200:
-#                 result = response.json()
-#                 similarity = result.get("similarity", 0)
-                
-#                 # Authentifier si le pourcentage de similarité est assez élevé
-#                 if similarity > 90:  # seuil de similarité ajustable
-#                     login(request, person)
-#                     return redirect("front:indexF")
-
-#         # Si aucun visage n'est reconnu, afficher une erreur
-#         return render(request, "frontOffice/person/login.html", {"error": "Visage non reconnu."})
-
-#     return render(request, "frontOffice/person/login.html")
-
-
-# # finale hedhy 
-# def register(request):
-#     if request.method == "POST":
-#         form = CustomUserCreationForm(request.POST, request.FILES)  # Inclure request.FILES pour l'upload
-#         if form.is_valid():
-#             user = form.save()  # Sauvegarde l’utilisateur avec l’image faciale
-#             login(request, user)  # Connexion automatique après l’inscription
-#             return redirect("front:indexF")  # Redirigez vers la page d'accueil ou une autre page
-#     else:
-#         form = CustomUserCreationForm()
-    
-#     return render(request, "frontOffice/person/RegisterFace.html", {"form": form})
-
-# def face_login(request):
-#     if request.method == 'POST':
-#         form = FaceLoginForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             face_image = request.FILES.get('face_image')
-#             user = authenticate_face(request , face_image)
-#             if user:
-#                 # Connectez l'utilisateur
-#                 login(request, user)
-#                 return redirect('front:indexFront')  # Redirigez vers la page d'accueil ou autre
-#             else:
-#                 error_message = "Reconnaissance faciale échouée. Essayez à nouveau."
-#                 return render(request, 'frontOffice/person/face_login.html', {'form': form, 'error_message': error_message})
-#     else:
-#         form = FaceLoginForm()
-#     return render(request, 'frontOffice/person/face_login.html', {'form': form})
-
-# def authenticate_face(request, face_image):
-#     url = "https://facex-facex-v1.p.rapidapi.com/compare_faces"
-    
-#     face_image_data = face_image.read()
-
-#     stored_user_images = Person.objects.all()
-#     for user in stored_user_images:
-#         if not user.face_image:
-#             continue
-
-#         stored_image_url = request.build_absolute_uri(user.face_image.url)
-
-#         querystring = {
-#             "face_det": "1"
-#         }
-
-#         headers = {
-#             "x-rapidapi-key": "0b3b105646mshcb64140d7bd3783p107fadjsndd3d929023bc",
-#             "x-rapidapi-host": "facex-facex-v1.p.rapidapi.com",
-#             "Content-Type": "multipart/form-data"
-#         }
-
-#         response = requests.post(url, data={
-#             'img_1': (face_image.name, face_image_data, face_image.content_type),
-#             'img_2': (stored_image_url, requests.get(stored_image_url).content, 'image/jpeg')
-#         }, headers=headers, params=querystring)
-
-#         print(response.json())  # Affiche la réponse pour déboguer
-
-#         if response.status_code == 200:
-#             result = response.json()
-#             # Réduisez le seuil de similarité pour tester
-#             if result.get('similarity') >= 0.5:
-#                 return user
-
-#     return None
-
-################generation de password sécurisé###################
+################ generation de password sécurisé ###################
 genai.configure(api_key="AIzaSyBU9E_Dbq8rYEjuGPlCvuqPytXMk0N71YU")
 
 def ai_generate_password(keyword):

@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.forms.widgets import ClearableFileInput
 from django.contrib.auth.forms import PasswordChangeForm
 from django.utils.translation import gettext_lazy as _ 
+from django.core.exceptions import ValidationError
 
 class UserRegisterForm(UserCreationForm):
     
@@ -12,7 +13,25 @@ class UserRegisterForm(UserCreationForm):
         model = get_user_model()
         
         fields= ['cin','first_name','last_name','username','email','keyword', 'password1','password2']
-        
+
+    def clean_cin(self):
+        cin = self.cleaned_data.get('cin')
+        if len(cin) != 8:
+            raise ValidationError("The CIN must contain exactly 8 characters.")
+        return cin
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if get_user_model().objects.filter(email=email).exists():
+            raise ValidationError("This email is already in use.")
+        return email
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise ValidationError("The passwords do not match.")
+        return password2
 
     def __init__(self, *args, **kwargs):
         super(UserRegisterForm, self).__init__(*args, **kwargs)
@@ -63,7 +82,7 @@ class UpdatePersonForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
         
-        fields= ['cin','first_name','last_name','username','is_superuser']
+        fields= ['first_name','last_name','username','is_superuser']
         
 
     def __init__(self, *args, **kwargs):
@@ -96,13 +115,12 @@ class PersonUpdateProfileForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
 
-        # Personnalisation du champ d'upload d'image
+       
         self.fields['image'].widget.attrs.update({
-            'class': 'form-control-file',  # Classe Bootstrap pour le champ de fichier
-            'id': 'image'  # Ajout d'un ID pour le JavaScript de prévisualisation si besoin
+            'class': 'form-control-file',  
+            'id': 'image'  
         })
         
-        # Optionnel : Vous pouvez ajouter un placeholder pour donner des instructions
         self.fields['image'].widget.attrs['placeholder'] = 'Téléchargez votre image ici'
 
     def save(self, commit=True):
@@ -133,7 +151,7 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     )
 
     class Meta:
-        model = None  # Pas besoin de définir un modèle ici
+        model = None  
         fields = ['old_password', 'new_password1', 'new_password2']
 
 

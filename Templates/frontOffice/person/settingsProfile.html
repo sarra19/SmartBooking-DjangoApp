@@ -122,187 +122,79 @@
                     </div>
                 </div>
             </div>
-        <!-- <div>
+            <!-- <div>
       <a href="{% url 'back:settings' %}" class="btn btn-outline-primary d-none d-md-block">Edit Profile</a>
     </div> -->
-    </div>
-    <div class="row mb-8 py-6 ">
-        <div class="col-xl-3 col-lg-4 col-md-12 col-12">
-            <div class="mb-4 mb-lg-0">
-                <h4 class="mb-1">General Setting</h4>
-                <p class="mb-0 fs-5 text-muted">Profile configuration settings </p>
+        </div>
+        <div class="row mb-8 py-6 ">
+            <div class="col-xl-3 col-lg-4 col-md-12 col-12">
+                <div class="mb-4 mb-lg-0">
+                    <h4 class="mb-1">General Setting</h4>
+                    <p class="mb-0 fs-5 text-muted">Profile configuration settings </p>
+                </div>
+
             </div>
 
-        </div>
+            <div class="col-xl-9 col-lg-8 col-md-12 col-12">
+                <!-- card -->
+                <div class="card">
+                    <!-- card body -->
+                    <div class="card-body">
+                        <div class=" mb-6">
+                            <h4 class="mb-1">General Settings</h4>
 
-        <div class="col-xl-9 col-lg-8 col-md-12 col-12">
-            <!-- card -->
-            <div class="card">
-                <!-- card body -->
-                <div class="card-body">
-                    <div class=" mb-6">
-                        <h4 class="mb-1">General Settings</h4>
-
-                    </div>
-                    <div class="row align-items-center mb-8">
-                        <div class="col-md-9">
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <form method="POST" enctype="multipart/form-data"
-                                        action="{% url 'back:settingsProfile' %}">
-                                        {% csrf_token %}
-                                        <!-- Champ de téléchargement d'image -->
-                                        <div class="mb-3 row">
-                                            <label for="image" class="col-sm-4 col-form-label">Image</label>
-                                            <div class="col-md-8 d-flex align-items-center">
-                                                <div class="me-3">
-                                                    <a class="rounded-circle me-2" href="#" role="button"
-                                                        id="dropdownUser" data-bs-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <div class="avatar avatar-md">
-                                                            {% if user.image %}
-                                                            <img src="{{ user.image.url }}" alt="User Image"
-                                                                class="rounded-circle"
-                                                                style="width: 100%; height: 100%; object-fit: cover;">
-                                                            {% else %}
-                                                            <img src="{% static 'frontOffice/img/anonyme.avif' %}"
-                                                                alt="Default Image" class="rounded-circle"
-                                                                style="width: 100%; height: 100%; object-fit: cover;">
-                                                            {% endif %}
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                <input type="file" name="image" id="image" class="form-control-file"
-                                                    accept="image/*">
-                                            </div>
-                                        </div>
-
-                                        <!-- Champ du nom d'utilisateur -->
-                                        <div class="mb-3 row">
-                                            <label for="username" class="col-sm-4 col-form-label">Username</label>
-                                            <div class="col-md-8 col-12">
-                                                {{ form.username }}
-                                            </div>
-                                        </div>
-
-                                        <!-- Champ de localisation -->
-                                        <div class="mb-3 row">
-                                            <label for="location" class="col-sm-4 col-form-label">Location</label>
-                                            <div class="col-md-8 col-12">
-                                                {{ form.location }}
-                                            </div>
-                                        </div>
-
-                                        <button type="submit" name="update_profile" class="btn btn-primary">Save
-                                            Changes</button>
-                                    </form>
-                                </div>
-                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-    <div class="row mb-8">
-        <div class="col-xl-3 col-lg-4 col-md-12 col-12">
-            <div class="mb-6 mb-lg-0">
-                <h4 class="mb-1">Password Setting</h4>
-                <p class="mb-0 fs-5 text-muted">Change your password </p>
-            </div>
-        </div>
-        <div class="col-xl-9 col-lg-8 col-md-12 col-12">
-            <!-- card -->
-            <div class="card " id="edit">
-                <!-- card body -->
-                <div class="card-body me-8">
-                    <div class="mb-6 ">
-                        <h4 class="mb-1">Change your password</h4>
-                        <form method="post">.
-                            {% csrf_token %}
-                            <div class="mb-3 row">
-                                <label for="currentPassword" class="col-sm-4
-                                        col-form-label form-label">Current password</label>
-
-                                <div class="col-md-6 col-6">
-                                    {{ password_form.old_password }}
-                                </div>
-                            </div>
-                            <!-- row -->
-                            <div class="mb-3 row">
-                                <label for="currentNewPassword" class="col-sm-4
-                                        col-form-label form-label">New password</label>
-
-                                <div class="col-md-6 col-6">
-                                    {{ password_form.new_password1 }}
-                                </div>
-                            </div>
-                            <!-- row -->
-                            <div class="row align-items-center">
-                                <label for="confirmNewpassword" class="col-sm-4
-                                        col-form-label form-label">Confirm new password</label>
-                                <div class="col-md-6 col-6 mb-2 mb-lg-0">
-                                    {{ password_form.new_password2 }}
-                                </div>
-                            </div>
-                            <button type="submit" name="change_password" class="btn btn-primary mt-6">Change</button>
-                        </form>
-                        {% if messages %}
-                        <ul>
-                            {% for message in messages %}
-                            <li>{{ message }}</li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xl-3 col-lg-4 col-md-12 col-12">
-            <div class="mb-4 mb-lg-0">
-                <h4 class="mb-1">Delete Account</h4>
-            </div>
-
-        </div>
-
-        <div class="col-xl-9 col-lg-8 col-md-12 col-12">
-            <!-- card -->
-
-            <div class="card mb-6">
-                <!-- card body -->
-                <div class="card-body">
-                    <div class="mb-6">
-                        <h4 class="mb-1">Danger Zone</h4>
-                    </div>
-                    <div>
-                        <!-- text -->
-                        <p>Delete all content linked to your account, such as reservations and recommendations .
-                            Your username will also become available to other users.</p>
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
-                            Delete Account
-                        </button>
-                        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
-                            aria-labelledby="deleteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-
-                                    </div>
-                                    <div class="modal-body">
-                                        Are you sure you want to delete your account? This action cannot be undone.
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-primary"
-                                            data-dismiss="modal">Cancel</button>
-                                        <form method="POST" id="deleteForm" style="display:inline;">
+                        <div class="row align-items-center mb-8">
+                            <div class="col-md-9">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <form method="POST" enctype="multipart/form-data"
+                                            action="{% url 'back:settingsProfile' %}">
                                             {% csrf_token %}
-                                            <button type="submit" name="delete_account" class="btn btn-danger">Delete
-                                                Account</button>
+                                            <!-- Champ de téléchargement d'image -->
+                                            <div class="mb-3 row">
+                                                <label for="image" class="col-sm-4 col-form-label">Image</label>
+                                                <div class="col-md-8 d-flex align-items-center">
+                                                    <div class="me-3">
+                                                        <a class="rounded-circle me-2" href="#" role="button"
+                                                            id="dropdownUser" data-bs-toggle="dropdown"
+                                                            aria-haspopup="true" aria-expanded="false">
+                                                            <div class="avatar avatar-md">
+                                                                {% if user.image %}
+                                                                <img src="{{ user.image.url }}" alt="User Image"
+                                                                    class="rounded-circle"
+                                                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                                                {% else %}
+                                                                <img src="{% static 'frontOffice/img/anonyme.avif' %}"
+                                                                    alt="Default Image" class="rounded-circle"
+                                                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                                                {% endif %}
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    <input type="file" name="image" id="image" class="form-control-file"
+                                                        accept="image/*">
+                                                </div>
+                                            </div>
+
+                                            <!-- Champ du nom d'utilisateur -->
+                                            <div class="mb-3 row">
+                                                <label for="username" class="col-sm-4 col-form-label">Username</label>
+                                                <div class="col-md-8 col-12">
+                                                    {{ form.username }}
+                                                </div>
+                                            </div>
+
+                                            <!-- Champ de localisation -->
+                                            <div class="mb-3 row">
+                                                <label for="location" class="col-sm-4 col-form-label">Location</label>
+                                                <div class="col-md-8 col-12">
+                                                    {{ form.location }}
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" name="update_profile" class="btn btn-primary">Save
+                                                Changes</button>
                                         </form>
                                     </div>
                                 </div>
@@ -310,9 +202,117 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
-    </div>
+        <div class="row mb-8">
+            <div class="col-xl-3 col-lg-4 col-md-12 col-12">
+                <div class="mb-6 mb-lg-0">
+                    <h4 class="mb-1">Password Setting</h4>
+                    <p class="mb-0 fs-5 text-muted">Change your password </p>
+                </div>
+            </div>
+            <div class="col-xl-9 col-lg-8 col-md-12 col-12">
+                <!-- card -->
+                <div class="card " id="edit">
+                    <!-- card body -->
+                    <div class="card-body me-8">
+                        <div class="mb-6 ">
+                            <h4 class="mb-1">Change your password</h4>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3 row mt-8">
+                                    <label for="currentPassword" class="col-sm-4 col-form-label form-label">Current
+                                        password</label>
+                                    <div class="col-md-6 col-6">
+                                        {{ password_form.old_password }}
+                                        {% for error in password_form.old_password.errors %}
+                                        <div class="text-danger">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="currentNewPassword" class="col-sm-4 col-form-label form-label">New
+                                        password</label>
+                                    <div class="col-md-6 col-6">
+                                        {{ password_form.new_password1 }}
+                                        {% for error in password_form.new_password1.errors %}
+                                        <div class="text-danger">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <label for="confirmNewpassword" class="col-sm-4 col-form-label form-label">Confirm
+                                        new password</label>
+                                    <div class="col-md-6 col-6 mb-2 mb-lg-0">
+                                        {{ password_form.new_password2 }}
+                                        {% for error in password_form.new_password2.errors %}
+                                        <div class="text-danger">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <button type="submit" name="change_password"
+                                    class="btn btn-primary mt-6">Change password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-lg-4 col-md-12 col-12">
+                <div class="mb-4 mb-lg-0">
+                    <h4 class="mb-1">Delete Account</h4>
+                </div>
+
+            </div>
+
+            <div class="col-xl-9 col-lg-8 col-md-12 col-12">
+                <!-- card -->
+
+                <div class="card mb-6">
+                    <!-- card body -->
+                    <div class="card-body">
+                        <div class="mb-6">
+                            <h4 class="mb-1">Danger Zone</h4>
+                        </div>
+                        <div>
+                            <!-- text -->
+                            <p>Delete all content linked to your account, such as reservations and recommendations .
+                                Your username will also become available to other users.</p>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+                                Delete Account
+                            </button>
+                            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+                                aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete your account? This action cannot be undone.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary"
+                                                data-dismiss="modal">Cancel</button>
+                                            <form method="POST" id="deleteForm" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" name="delete_account"
+                                                    class="btn btn-danger">Delete
+                                                    Account</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     </div>
     </div>
