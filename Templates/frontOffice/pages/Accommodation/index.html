@@ -1,0 +1,145 @@
+{% extends 'frontOffice/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="text-white display-3 mb-4">Our Accommodations</h3>
+        <ol class="breadcrumb justify-content-center mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'front:indexF' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item active text-white">Available Accommodations</li>
+        </ol>    
+    </div>
+</div>
+<!-- Header End -->
+
+
+
+<!-- Accommodation List Start -->
+<div class="container-fluid blog py-5">
+    <div class="container py-5">
+        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
+            <h5 class="section-title px-3">Available Accommodations</h5>
+            <h1 class="mb-4">Discover Your Next Stay</h1>
+            <p class="mb-0">Explore our exclusive accommodations designed to make your stay comfortable and memorable.</p>
+        </div>
+        <!-- <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+              <img src="{{ MEDIA_URL }}{{ event.image }}" alt="{{ event.title }}" class="card-img-top" style="object-fit: cover; height: 200px;">
+        <div class="row g-4 justify-content-center"> -->
+          <div class="row">
+          {% for accommodation in accommodations %}
+              <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                  <div class="blog-img">
+                      <div class="blog-img-inner">
+                          {% if accommodation.image %}
+                              <img class="img-fluid w-100 rounded-top" src="{{ MEDIA_URL }}{{ accommodation.image }}" alt="{{ accommodation.name }}">
+                          {% else %}
+                              <img src="{% static 'backOffice/assets/images/accommodation_images/default_accommodation.png' %}" alt="Default accommodation Image" class="img-fluid w-100 rounded-top">
+                          {% endif %}
+                          <!-- <div class="blog-icon">
+                              <a href="#" class="my-auto" aria-label="View Details"><i class="fas fa-link fa-2x text-white"></i></a>
+                          </div> -->
+                      </div>
+                  </div>
+                  
+                      <div class="blog-content border rounded-bottom p-4">
+                          <h5 class="card-title">{{ accommodation.name }}</h5>
+                          <p class="mb-2"><i class="fas fa-map-marker-alt"></i> Location: {{ accommodation.location }}</p>
+                          <p class="mb-2"><i class="fas fa-home"></i> Type: {{ accommodation.type_of_accommodation }}</p>
+                          <p class="mb-2"><i class="fas fa-dollar-sign"></i> Price: {{ accommodation.price_per_night }} DT per night</p>
+                          <p class="mb-2"><i class="fas fa-concierge-bell"></i> Amenities: {{ accommodation.amenities }}</p> <!-- Updated this line -->
+
+                          <a href="{% url 'accommodation:review_detail' accommodation.id %}" class="btn btn-primary rounded-pill">View Reviews</a>
+                          <!-- <a href="{% url 'accommodation:detail' accommodation.id %}" class="btn btn-primary rounded-pill">View Details</a> -->
+      
+                          <!-- Section de feedback -->
+                          <div class="feedback-section">
+                              <textarea id="feedback-{{ accommodation.id }}" rows="4" cols="35" placeholder="Écrivez votre avis ici..."></textarea>
+                              <a onclick="submitFeedback({{ accommodation.id }})" class="btn btn-primary rounded-pill">Analyser</a>
+      
+                              <div id="sentiment-result-{{ accommodation.id }}" class="result"></div>
+                          </div>
+                      </div>
+                  </div>  
+              </div>  
+          {% empty %}
+              <div class="col-12">
+                  <p class="text-center">No accommodations available at the moment.</p>
+              </div>
+          {% endfor %}
+      </div>
+      
+        
+        <!-- Pagination -->
+        <div class="pagination-container mt-4">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1" aria-label="First">&laquo;&laquo;</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">&laquo;</a></li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">&raquo;</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">&raquo;&raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Accommodation List End -->
+
+<!-- Sentiment Analysis Script -->
+<script>
+  function submitFeedback(accommodationId) {
+    let feedback = document.getElementById(`feedback-${accommodationId}`).value;
+
+    // Clean feedback
+    feedback = feedback.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
+
+    fetch("{% url 'accommodation:sentiment_analysis' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: `feedback=${encodeURIComponent(feedback)}&accommodation_id=${accommodationId}`,
+    })
+    .then(response => {
+      if (response.redirected) {
+        // If redirected, navigate to that URL
+        window.location.href = response.url;
+      } else {
+        return response.json();
+      }
+    })
+    .then(data => {
+      const resultDiv = document.getElementById(`sentiment-result-${accommodationId}`);
+      if (data.error) {
+        resultDiv.innerText = "Erreur lors de l'analyse du feedback.";
+      } else {
+        // Display the sentiment result
+        resultDiv.innerHTML = `Sentiment: ${data.label} (Score: ${data.score.toFixed(2)}) ${data.emoji}`;
+
+        // Show the result div
+        resultDiv.style.display = 'block';
+
+        // Hide it after 5 seconds
+        setTimeout(() => {
+          resultDiv.style.display = 'none';
+        },1000 ); // 5000 milliseconds = 5 seconds
+      }
+    })
+    .catch(error => console.error("Erreur:", error));
+  }
+</script>
+
+{% endblock %}

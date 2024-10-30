@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedback Result</title>
+    <style>
+        .result-container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .emoji {
+            font-size: 50px;
+            margin-top: 20px;
+        }
+        .message {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container" id="feedback-alert">
+        <h2>Thank You for Your Feedback!</h2>
+        <div class="message">
+            Your sentiment about this review is: <strong>{{ sentiment_label }}</strong>
+        </div>
+        <div class="emoji">{{ emoji }}</div>
+        <div class="score">Score: {{ score }}</div>
+    </div>
+    <script>
+        // Hide the feedback alert after 5 seconds
+        // Redirect after 5 seconds
+        setTimeout(() => {
+            window.location.href = "{% url 'accommodation:accommodation_list_front' %}"; // Replace with the correct URL or route
+        }, 3000); // 5000 milliseconds = 5 seconds
+      </script>
+</body>
+</html>

@@ -20,6 +20,8 @@ from smartBooking_app import views
 from django.conf import settings
 from django.conf.urls.static import static
 
+from smartBooking_app.views import signin  # Assurez-vous d'importer la vue home
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path ('front/' , include('smartBooking_app.urls_front', namespace='front')),
@@ -29,6 +31,10 @@ urlpatterns = [
     #### sign in back ######
     # path('login/', views.signin, name='signin'),  
     # path('home/', views.home, name='home'),
+
+
+    path('accommodation/', include('Accommodation.urls', namespace='accommodation')),
+
 
 
 

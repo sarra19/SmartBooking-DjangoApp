@@ -103,7 +103,7 @@
                         
                                 <a href="{% url 'front:services' %}" class="nav-item nav-link">flights</a>
                                 <a href="{% url 'front:packages' %}" class="nav-item nav-link">transports</a>
-                                <a href="{% url 'front:blog' %}" class="nav-item nav-link">Accommodations</a>
+                                <a href="{% url 'accommodation:accommodation_list_front' %}" class="nav-item nav-link">Accommodations</a>
                                 <a href="{% url 'front:gallery' %}" class="nav-item nav-link">Events</a>
                             
                             <div class="nav-item dropdown">
@@ -116,6 +116,7 @@
                                     <a href="{% url 'front:testimonial' %}" class="dropdown-item">Testimonial</a>
                                     <a href="{% url 'front:404' %}"class="dropdown-item">404 Page</a>
                                 </div>
+
                             </div>
                             <a href="{% url 'front:contact' %}" class="nav-item nav-link">Contact</a>
                         </div>

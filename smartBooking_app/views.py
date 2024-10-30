@@ -101,8 +101,8 @@ def docs(request, *args, **kwargs):
 def faq(request, *args, **kwargs):
     return render(request, 'backOffice/pages/faq.html')
 
-def layout(request, *args, **kwargs):
-    return render(request, 'backOffice/pages/layout.html')
+# def add_accommodation(request, *args, **kwargs):
+#     return render(request, 'backOffice/pages/Accommodation/add.html')
 
 # docs
 
