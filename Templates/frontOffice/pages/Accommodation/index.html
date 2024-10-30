@@ -63,6 +63,9 @@
                               <a onclick="submitFeedback({{ accommodation.id }})" class="btn btn-primary rounded-pill">Analyser</a>
       
                               <div id="sentiment-result-{{ accommodation.id }}" class="result"></div>
+
+                              <a href="{% url 'reservation:addRAccFront' accommodation.id %}" class="btn btn-success mt-2">Reserve</a>  <!-- Reserve Button -->
+
                           </div>
                       </div>
                   </div>  

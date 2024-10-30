@@ -1,0 +1,137 @@
+{% extends 'frontOffice/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="text-white display-3 mb-4">Add Reservation</h3>
+        <ol class="breadcrumb justify-content-center mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'front:indexF' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item active text-white">Add Your Information</li>
+        </ol>
+    </div>
+</div>
+<!-- Header End -->
+
+<!-- Reservation Form Start -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 col-12 mx-auto">
+            <h2 class="text-black text-center mb-4">Add Your Reservation</h2>
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form class="needs-validation" method="POST" novalidate>
+                {% csrf_token %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Reservation Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Reservation Name -->
+                            <div class="col-md-6">
+                                {{ form.name_reservation.label_tag }}
+                                {{ form.name_reservation }}
+                                {% if form.name_reservation.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.name_reservation.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- CIN -->
+                            <div class="col-md-6">
+                                {{ form.cin.label_tag }}
+                                {{ form.cin }}
+                                {% if form.cin.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.cin.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="col-md-6">
+                                {{ form.phone_number.label_tag }}
+                                {{ form.phone_number }}
+                                {% if form.phone_number.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.phone_number.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Special Requests -->
+                            <div class="col-12">
+                                {{ form.special_requests.label_tag }}
+                                {{ form.special_requests }}
+                                {% if form.special_requests.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.special_requests.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Status Selection -->
+                            <div class="col-md-6">
+                                {{ form.status.label_tag }}
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.status.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Number of Travelers -->
+                            <div class="col-md-6">
+                                <label for="number_of_travelers" class="form-label">Number of Travelers</label>
+                                <input type="number" id="number_of_travelers" name="number_of_travelers" class="form-control" placeholder="Enter number of travelers" required min="1" onchange="updatePassportFields()">
+                            </div>
+
+                            <!-- Passport Numbers Fields -->
+                            <div class="col-12" id="passport-fields"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Save Reservation</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- Reservation Form End -->
+
+<script>
+    function updatePassportFields() {
+        const passportFieldsContainer = document.getElementById('passport-fields');
+        const numberOfTravelers = document.getElementById('number_of_travelers').value;
+        passportFieldsContainer.innerHTML = ''; // Clear previous fields
+
+        for (let i = 1; i <= numberOfTravelers; i++) {
+            const passportField = document.createElement('div');
+            passportField.classList.add('mb-3');
+            passportField.innerHTML = `
+                <label for="passport_number_${i}" class="form-label">Passport Number ${i}</label>
+                <input type="text" id="passport_number_${i}" name="passport_numbers[]" class="form-control" placeholder="Enter passport number ${i}" maxlength="8" minlength="8" required>
+            `;
+            passportFieldsContainer.appendChild(passportField);
+        }
+    }
+</script>
+
+{% endblock %}

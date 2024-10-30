@@ -1,0 +1,109 @@
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'BackOffice/partials/head.html' %}
+    <title>Edit Flight | Dash Ui - Bootstrap 5 Admin Dashboard Template</title>
+</head>
+
+<body class="bg-light">
+    <div id="db-wrapper">
+        <!-- navbar vertical -->
+        {% include 'BackOffice/partials/navbar-vertical.html' with page="dashboard" %}
+        <!-- Page content -->
+        <div id="page-content">
+            {% include 'BackOffice/partials/header.html' %}
+            <div class="container mt-5">
+                <!-- Titre avec fond bleu et texte blanc -->
+                <div class="bg-primary p-3 mb-4 text-center">
+                    <h2 class="text-white">Edit Flight </h2>
+                </div>
+
+                <!-- Formulaire de mise à jour de vol -->
+                <div class="card mx-auto" style="max-width: 800px; padding: 20px;">
+                    <form method="POST" action="{% url 'Flight:flight_update' flight.id %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Nom du vol et numéro du vol sur une seule ligne -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="flight_name">Flight Name</label>
+                                <input type="text" class="form-control" id="flight_name" name="flight_name" placeholder="Enter flight name" value="{{ flight.flight_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="flight_number">Flight Number</label>
+                                <input type="text" class="form-control" id="flight_number" name="flight_number" placeholder="Enter flight number" value="{{ flight.flight_number }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Ville de départ et d'arrivée sur une seule ligne -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="departure_city">Departure City</label>
+                                <input type="text" class="form-control" id="departure_city" name="departure_city" placeholder="Enter departure city" value="{{ flight.departure_city }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="arrival_city">Arrival City</label>
+                                <input type="text" class="form-control" id="arrival_city" name="arrival_city" placeholder="Enter arrival city" value="{{ flight.arrival_city }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Date de départ et d'arrivée sur une seule ligne -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="departure_date">Departure Date</label>
+                                <input type="datetime-local" class="form-control" id="departure_date" name="departure_date" value="{{ flight.departure_date|date:'Y-m-d\TH:i' }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="arrival_date">Arrival Date</label>
+                                <input type="datetime-local" class="form-control" id="arrival_date" name="arrival_date" value="{{ flight.arrival_date|date:'Y-m-d\TH:i' }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Compagnie aérienne et prix par place sur une seule ligne -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="airline">Airline</label>
+                                <input type="text" class="form-control" id="airline" name="airline" placeholder="Enter airline name" value="{{ flight.airline }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="price_per_place">Price Per Place</label>
+                                <input type="number" class="form-control" id="price_per_place" name="price_per_place" placeholder="Enter price per place" value="{{ flight.price_per_place }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Places disponibles et image sur une seule ligne -->
+                   <!-- Places disponibles et image sur une seule ligne -->
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label for="image">Flight Image</label>
+        <input type="file" class="form-control" id="image" name="image">
+        <!-- Affichage de l'image actuelle -->
+        {% if flight.image %}
+            <div class="mt-2">
+                <img src="{% static 'backOffice/assets/images/' %}{{ flight.image }}" alt="{{ flight.flight_name }}" style="max-width: 100px; height: auto;">
+                <p>Current image</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+                        <!-- Boutons "Return" et "Update Flight" sur la même ligne -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <!-- Bouton Retour à gauche -->
+                            <a href="{% url 'Flight:flight_list' %}" class="btn btn-secondary">Return to List</a>
+                            <!-- Bouton Mettre à jour à droite -->
+                            <button type="submit" class="btn btn-primary">Update Flight</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

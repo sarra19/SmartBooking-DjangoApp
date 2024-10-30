@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% load static %}
+  {% include 'backOffice/partials/head.html' %}
+  <link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM4c5VJ1qQ4eE2jI2M6f4k99d9+U3p1m6pY2jH" crossorigin="anonymous">
+  <title>Reservations</title>
+</head>
+
+<body class="bg-light">
+  <div id="db-wrapper">
+    {% include 'backOffice/partials/navbar-vertical.html' with page="Reservations" page_group="reservations" subpage="accommodation" %}
+    
+    <div id="page-content">
+      {% include 'backOffice/partials/header.html' %}
+      <div class="container-fluid p-6">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-12">
+            <div class="border-bottom pb-4 mb-4">
+              <h3 class="mb-0 fw-bold">Reservations</h3>
+            </div>
+            <div class="mb-3 text-end">
+              <a href="{% url 'reservation:add_reservation' %}" class="btn btn-success">
+                <i data-feather="plus"></i> Add Reservation
+              </a>
+            </div>
+            <div class="mb-3 text-end">
+              <a href="{% url 'reservation:reservations_pdf' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-file-pdf"></i> Download PDF
+              </a>
+            </div>
+            <div class="mb-3 text-end">
+              <a href="{% url 'reservation:statistics' %}" class="btn btn-info">
+                <i class="fas fa-chart-pie"></i> Statistiques
+              </a>
+            </div>
+            <!-- Sub Navigation Bar -->
+            <nav class="mb-4">
+              <ul class="nav nav-pills">
+                <li class="nav-item">
+                  <a class="nav-link {% if request.GET.status == 'accepted' %}active{% endif %}" href="?status=accepted&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}">Accepted</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link {% if request.GET.status == 'rejected' %}active{% endif %}" href="?status=rejected&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}">Rejected</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link {% if request.GET.status == 'pending' %}active{% endif %}" href="?status=pending&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}">Pending</a>
+                </li>
+              </ul>
+            </nav>
+
+            <div class="mb-4">
+              <form method="GET" action="">
+                <div class="row">
+                  <div class="col-md-4">
+                    <input type="text" name="search_query" class="form-control" placeholder="Search by Name, CIN, etc." value="{{ request.GET.search_query }}">
+                  </div>
+                  <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                  </div>
+                  <div class="col-md-4">
+                    <select name="sort" class="form-control" onchange="this.form.submit()">
+                      <option value="">Sort By</option>
+                      <option value="name_reservation" {% if request.GET.sort == 'name_reservation' %}selected{% endif %}>Name</option>
+                      <option value="cin" {% if request.GET.sort == 'cin' %}selected{% endif %}>CIN</option>
+                      <option value="phone_number" {% if request.GET.sort == 'phone_number' %}selected{% endif %}>Phone Number</option>
+                      <option value="id_flight" {% if request.GET.sort == 'id_flight' %}selected{% endif %}>Flight</option>
+                      <option value="id_accommodation" {% if request.GET.sort == 'id_accommodation' %}selected{% endif %}>Accommodation</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+            
+            
+            
+            <table class="table">
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">CIN</th>
+                  <th scope="col">Phone Number</th>
+                  <th scope="col">Special Requests</th>
+                  <th scope="col">Status</th> <!-- New Status Column -->
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for reservation in reservations %}
+                <tr>
+                  <th scope="row">{{ forloop.counter }}</th>
+                  <td>{{ reservation.name_reservation }}</td>
+                  <td>{{ reservation.cin }}</td>
+                  <td>{{ reservation.phone_number }}</td>
+                  <td>{{ reservation.special_requests }}</td>
+                  <td>
+                    {% if reservation.status == 'accepted' %}
+                      <span class="text-success">Accepted</span> <!-- Green for accepted -->
+                    {% elif reservation.status == 'rejected' %}
+                      <span class="text-danger">Rejected</span> <!-- Red for rejected -->
+                    {% else %}
+                      <span>Pending</span> <!-- Default for pending -->
+                    {% endif %}
+                  </td>
+                  <td class="d-flex ms-2 ">
+                    <a href="{% url 'reservation:details_reservation' reservation.id %}" class="btn btn-primary btn-sm me-2">
+                        <i data-feather="eye" class="icon-xxs"></i> View details
+                    </a>
+                    {% if reservation.status == 'pending' %}
+                    <a href="{% url 'reservation:accept_reservation' reservation.id %}" class="btn btn-success btn-sm me-2">
+                        <i data-feather="check" class="icon-xxs"></i> Accept
+                    </a>
+                    <a href="{% url 'reservation:reject_reservation' reservation.id %}" class="btn btn-danger btn-sm">
+                        <i data-feather="x" class="icon-xxs"></i> Reject
+                    </a>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="7" class="text-center">No reservations found.</td> 
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <div class="pagination-container mt-4">
+              <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                  {% if page_obj.has_previous %}
+                    <li class="page-item">
+                      <a class="page-link" href="?page=1&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}&status={{ request.GET.status }}" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                      </a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}&status={{ request.GET.status }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                      <a class="page-link" href="?page={{ num }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}&status={{ request.GET.status }}">{{ num }}</a>
+                    </li>
+                  {% endfor %}
+                  {% if page_obj.has_next %}
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.next_page_number }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}&status={{ request.GET.status }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}&status={{ request.GET.status }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include 'backOffice/partials/scripts.html' %}
+</body>
+
+</html>

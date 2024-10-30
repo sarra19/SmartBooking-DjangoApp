@@ -1,0 +1,193 @@
+{% extends 'frontOffice/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <!-- Header Start -->
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h3 class="text-white display-3 mb-4">My reservations</h3>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'front:indexF' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                <li class="breadcrumb-item active text-white">My reservations</li>
+            </ol>    
+        </div>
+    </div>
+    
+    <div class="mb-4 mt-5">
+        <form method="GET" action="" class="w-100" style="max-width: 900px; margin: auto;">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-md-5 mb-3">
+                    <input type="text" name="search_query" class="form-control" placeholder="Search by Name, CIN, etc." value="{{ request.GET.search_query }}">
+                </div>
+                <div class="col-md-2 mb-3">
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </div>
+                <div class="col-md-5 mb-3">
+                    <select name="sort" class="form-control" onchange="this.form.submit()">
+                        <option value="">Sort By</option>
+                        <option value="name_reservation" {% if request.GET.sort == 'name_reservation' %}selected{% endif %}>Name</option>
+                        <option value="cin" {% if request.GET.sort == 'cin' %}selected{% endif %}>CIN</option>
+                        <option value="phone_number" {% if request.GET.sort == 'phone_number' %}selected{% endif %}>Phone Number</option>
+                        <option value="id_flight" {% if request.GET.sort == 'id_flight' %}selected{% endif %}>Flight</option>
+                        <option value="id_accommodation" {% if request.GET.sort == 'id_accommodation' %}selected{% endif %}>Accommodation</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Header End -->
+    <nav class="mb-4 mt-4 d-flex justify-content-center">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link {% if request.GET.status == 'accepted' %}active{% endif %}" href="?status=accepted&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}">Accepted</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.GET.status == 'rejected' %}active{% endif %}" href="?status=rejected&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}">Rejected</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.GET.status == 'pending' %}active{% endif %}" href="?status=pending&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}">Pending</a>
+            </li>
+        </ul>
+    </nav>
+    
+    <!-- Reservation Form Start -->
+    <div class="container my-5">
+        <div class="row">
+            {% for reservation in reservations %}
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card shadow-lg border-0 rounded h-100" style="min-height: 400px; 
+                    {% if reservation.status == 'accepted' %} background-color: #d4edda; {% endif %}
+                    {% if reservation.status == 'rejected' %} background-color: #f8d7da; {% endif %}
+                    {% if reservation.status == 'pending' %} background-color: #fff3cd; {% endif %}">
+                
+                        <div class="card-body d-flex flex-column p-4">
+                            <h5 class="card-title mb-3">{{ reservation.name_reservation }}</h5>
+
+                            <!-- Display Status -->
+                            <p class="card-text font-weight-bold {% if reservation.status == 'accepted' %}text-success{% elif reservation.status == 'rejected' %}text-danger{% else %}text-warning{% endif %}">
+                                Status: <strong>{{ reservation.status|capfirst }}</strong>
+                            </p>
+
+                            {% if reservation.id_event %}
+                                <p class="card-text text-warning">Event Reservation: {{ reservation.id_event.title }}</p>
+                                <div class="mb-3 text-center">
+                                    {% if reservation.id_event.image %}
+                                        <img src="{% static 'backOffice/assets/images/events/default_event.jpg' %}" alt="{{ reservation.id_event.title }}" class="img-fluid" style="max-width: 100%; height: 200px; object-fit: cover;">
+                                    {% else %}
+                                        <img src="{% static 'backOffice/assets/images/events/default_event.jpg' %}" class="img-fluid" alt="Default Event Image" style="max-width: 100%; height: 200px; object-fit: cover;">
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <!-- Flight Image and Name (only if id_flight exists) -->
+                                {% if reservation.id_flight %}
+                                    <div class="mb-3 text-center">
+                                        {% if reservation.id_flight.image %}
+                                            <img src="{% static 'backOffice/assets/images/' %}{{ reservation.id_flight.image.url }}" alt="{{ reservation.id_flight.title }}" class="img-fluid" style="max-width: 100%; height: 200px; object-fit: cover;">
+                                        {% else %}
+                                            <img src="{% static 'backOffice/assets/images/flights/default_flight.jpg' %}" class="img-fluid" alt="Default Flight Image" style="max-width: 100%; height: 200px; object-fit: cover;">
+                                        {% endif %}
+                                        <p class="card-text mt-2"><i class="fas fa-plane"></i> Flight: <strong>{{ reservation.id_flight }}</strong></p>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Accommodation Image -->
+                                {% if reservation.id_accommodation %}
+                                    <div class="mb-3 text-center">
+                                        {% if reservation.id_accommodation.image %}
+                                            <img src="{% static 'backOffice/assets/images/' %}{{ reservation.id_accommodation.image.url }}" alt="{{ reservation.id_accommodation.title }}" class="img-fluid" style="max-width: 100%; height: 200px; object-fit: cover;">
+                                        {% else %}
+                                            <img src="{% static 'backOffice/assets/images/accommodation_images/default_accommodation.png' %}" class="img-fluid" alt="Default Accommodation Image" style="max-width: 100%; height: 200px; object-fit: cover;">
+                                        {% endif %}
+                                        <p class="card-text mt-2"><i class="fas fa-bed"></i> Accommodation: <strong>{{ reservation.id_accommodation }}</strong></p>
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Conditionally display Number of Travelers and Passport Numbers -->
+                                {% if not reservation.id_flight %}
+                                    <p class="card-text">Number of Travelers: <strong>{{ reservation.number_of_travelers }}</strong></p>
+                                    <p class="card-text">Passport Numbers: <strong>{{ reservation.passport_numbers|join:", " }}</strong></p>
+                                {% endif %}
+                            {% endif %}
+
+                            <!-- User Name and Status -->
+                            <div class="mb-3">
+                                <strong>User Name:</strong>
+                                <span class="text-muted">
+                                    {{ reservation.user.username|default:"Username" }}
+                                </span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Status:</strong> 
+                                <span class="{% if reservation.status == 'pending' %}text-danger{% elif reservation.status == 'accepted' %}text-success{% endif %}">
+                                    {{ reservation.status|title }}
+                                </span>
+                            </div>
+
+                            <p class="card-text">CIN: <strong>{{ reservation.cin }}</strong></p>
+                            <p class="card-text">Phone Number: <strong>{{ reservation.phone_number }}</strong></p>
+                            <p class="card-text">Special Requests: {{ reservation.special_requests }}</p>
+                           
+                            <div class="mt-auto d-flex justify-content-between">
+                                <a href="{% url 'reservation:delete-freservation' reservation.id %}" class="btn btn-danger mt-2" style="transition: background-color 0.3s;">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                                {% if reservation.id_accommodation and not reservation.id_flight %}
+                                <a href="{% url 'reservation:update_reservationAf' reservation.id %}" class="btn btn-warning">
+                                        <i data-feather="edit" class="icon-xxs"></i> Edit Accommodation
+                                    </a>
+                                    {% elif reservation.id_event %}
+                                    <a href="{% url 'reservation:update_reservationEf' reservation.id %}" class="btn btn-warning">
+                                        <i data-feather="edit" class="icon-xxs"></i> Edit Event Reservation
+                                    </a>
+                                {% else%}
+                                    <a href="{% url 'reservation:update_reservationf' reservation.id %}" class="btn btn-warning">
+                                        <i data-feather="edit" class="icon-xxs"></i> Edit Flight Reservation
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">No reservations found.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+  
+    <div class="pagination-container mt-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</a></li>
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&search_query={{ request.GET.search_query }}&sort={{ request.GET.sort }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% endblock %}

@@ -27,6 +27,7 @@ class Accommodation(models.Model):
     ratings = models.JSONField(default=list)  # Pour stocker les évaluations individuelles
     rating = models.FloatField(null=True, blank=True)  # Pour stocker la note moyenne
     feedbacks = models.JSONField(default=list)  # Nouveau champ pour stocker les feedbacks
+    city = models.CharField(max_length=100,null=True)
 
     def __str__(self):
         return f"{self.name} - {self.type_of_accommodation} in {self.location}"

@@ -101,23 +101,13 @@
                             <a href="{% url 'front:indexF' %}" class="nav-item nav-link">Home</a>
                             <a href="{% url 'front:about' %}" class="nav-item nav-link active">About</a>
                         
-                                <a href="{% url 'front:services' %}" class="nav-item nav-link">flights</a>
-                                <a href="{% url 'front:packages' %}" class="nav-item nav-link">transports</a>
+                            <a href="{% url 'Flight:flight_list_front' %}" class="nav-item nav-link">Flights</a>
+                            <a href="{% url 'front:packages' %}" class="nav-item nav-link">transports</a>
                                 <a href="{% url 'accommodation:accommodation_list_front' %}" class="nav-item nav-link">Accommodations</a>
                                 <a href="{% url 'front:gallery' %}" class="nav-item nav-link">Events</a>
                             
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                                <div class="dropdown-menu m-0">
-                                    <a href="{% url 'front:destination' %}" class="dropdown-item">Destination</a>
-                                    <a href="{% url 'front:tour' %}" class="dropdown-item">Explore Tour</a>
-                                    <a href="{% url 'front:booking' %}" class="dropdown-item">Travel Booking</a>
-                                    <a href="{% url 'front:guides' %}" class="dropdown-item">Travel Guides</a>
-                                    <a href="{% url 'front:testimonial' %}" class="dropdown-item">Testimonial</a>
-                                    <a href="{% url 'front:404' %}"class="dropdown-item">404 Page</a>
-                                </div>
+                                <a href="{% url 'reservation:myreservation' 1 %}" class="nav-item nav-link">My reservations</a>
 
-                            </div>
                             <a href="{% url 'front:contact' %}" class="nav-item nav-link">Contact</a>
                         </div>
                         <a href="" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4">Book Now</a>

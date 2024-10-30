@@ -1,0 +1,94 @@
+
+{% extends 'frontOffice/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="text-white display-3 mb-4">Our Flights</h3>
+        <ol class="breadcrumb justify-content-center mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'front:indexF' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item active text-white">Flights</li>
+        </ol>
+    </div>
+</div>
+<!-- Header End -->
+
+<!-- Flights Section Start -->
+<div class="container-fluid packages py-5">
+    <div class="container py-5">
+        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
+            <h5 class="section-title px-3">Flights</h5>
+            <h1 class="mb-0">Explore Our Exclusive Flight Offers</h1>
+        </div>
+        <div class="mb-20"></div> 
+
+        <!-- Carousel Start -->
+        <div class="packages-carousel owl-carousel owl-theme"> 
+            {% for flight in flights %}
+        <div class="packages-item">
+            <div class="packages-img">
+                <!-- <img src="{% static 'backOffice/assets/images/' %}{{ flight.image }}" class="img-fluid w-100 rounded-top" style="height: 200px; object-fit: cover;" alt="{{ flight.flight_name }}"> -->
+                <img src="{{ flight.image.url }}" class="img-fluid w-100 rounded-top" style="height: 200px; object-fit: cover;" alt="{{ flight.flight_name }}">
+                <div class="packages-info d-flex border border-start-0 border-end-0 position-absolute" style="width: 100%; bottom: 0; left: 0; z-index: 5;">
+                    <small class="flex-fill text-center border-end py-2"><i class="fa fa-map-marker-alt me-2"></i>From {{ flight.departure_city }}</small>
+                    <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar-alt me-2"></i>{{ flight.departure_date }}</small>
+                    <small class="flex-fill text-center py-2"><i class="fa fa-plane me-2"></i>{{ flight.airline }}</small>
+                </div>
+                <div class="packages-price py-2 px-3">{{ flight.price_per_place }}DT</div>
+            </div>
+            <!-- Flight Details -->
+            <div class="packages-content bg-light">
+                <div class="p-4 pb-0 text-center">
+                    <h5 class="mb-0">{{ flight.arrival_city }}</h5>
+                    <small class="text-uppercase">Hotel Deals</small>
+                    <div class="mb-3 d-flex justify-content-center"> 
+                        <small class="fa fa-star text-primary"></small>
+                        <small class="fa fa-star text-primary"></small>
+                        <small class="fa fa-star text-primary"></small>
+                        <small class="fa fa-star text-primary"></small>
+                        <small class="fa fa-star text-primary"></small>
+                    </div>
+                    <p class="mb-4">Enjoy a comfortable journey with top-notch services provided by {{ flight.airline }}.</p>
+                </div>
+                
+                <div class="row bg-primary rounded-bottom mx-0">
+                    <div class="col-6 text-start px-0">
+                        <a  class="btn-hover btn text-white py-2 px-4">View Details</a>
+                    </div>
+                    <div class="col-6 text-end px-0">
+                        <a href="{% url 'reservation:Rsv-Acc-front' flight.id %}" class="btn-hover btn text-white py-2 px-4">Reserve</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+    </div>
+    <!-- Carousel End -->
+       
+</div>
+</div>
+
+
+
+<!-- Owl Carousel Script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script>
+    $(document).ready(function(){
+        console.log("Owl Carousel initialized");
+        $(".owl-carousel").owlCarousel({ 
+            items: 3, 
+            loop: false, 
+            nav: true,  
+            margin: 100, 
+            dots: true, 
+        });
+    });
+</script>
+
+{% endblock %}

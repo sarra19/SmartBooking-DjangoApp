@@ -44,7 +44,8 @@
                 </ul>
             </div>
         </li>
-        
+   
+          
         <!-- Nav item for Flights -->
         <li class="nav-item">
             <a class="nav-link has-arrow {% if context.page_group != 'flights' %}collapsed{% endif %}" href="#!" data-bs-toggle="collapse" data-bs-target="#navFlights" aria-expanded="{% if context.page_group == 'flights' %}true{% else %}false{% endif %}" aria-controls="navFlights">
@@ -54,35 +55,18 @@
             <div id="navFlights" class="collapse {% if context.page_group == 'flights' %}show{% endif %}" data-bs-parent="#sideNavbar">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link {% if context.page == 'flights_profile' %}active{% endif %}" href="{% url 'back:profile' %}">
-                            Profile
-                        </a>
+                        <a class="nav-link" href="{% url 'Flight:flight_list' %}">List of Flights</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if context.page == 'flights_settings' %}active{% endif %}" href="{% url 'back:settings' %}">
-                            Settings
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if context.page == 'flights_billing' %}active{% endif %}" href="{% url 'back:billing' %}">
-                            Billing
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if context.page == 'flights_pricing' %}active{% endif %}" href="{% url 'back:pricing' %}">
-                            Pricing
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if context.page == 'flights_404error' %}active{% endif %}" href="{% url 'back:404error' %}">
-                            404 Error
-                        </a>
-                    </li>
+                    
                 </ul>
             </div>
         </li>
-        
-
+        <li class="nav-item">
+            <a class="nav-link has-arrow {% if context.page == 'docs' %}active{% endif %}" href="{% url 'reservation:Rsv' %}">
+                <i data-feather="layers" class="nav-icon icon-xs me-2" >
+            </i>  Reservation
+            </a>
+         </li>
                 <li class="nav-item">
                     <a class="nav-link has-arrow @@if (context.page_group !== 'pages') { collapsed }" href="#!" data-bs-toggle="collapse" data-bs-target="#navPages" aria-expanded="false" aria-controls="navPages">
                         <i
