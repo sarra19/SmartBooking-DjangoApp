@@ -43,6 +43,7 @@ urlpatterns = [
 path('reservations/pdf/', views.reservations_pdf, name='reservations_pdf'),
          path('generate-transcription/', views.generate_transcript, name='generate-transcription'),
 
+    path('statistics/', views.statistics, name='statistics'),
 
 path('accept/<int:id>/', views.accept_reservation, name='accept_reservation'),
     path('reject/<int:id>/', views.reject_reservation, name='reject_reservation'),

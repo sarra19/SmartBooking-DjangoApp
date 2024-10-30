@@ -627,3 +627,20 @@ def reservations_pdf(request):
     if pisa_status.err:
         return HttpResponse('We had some errors with generating your PDF <pre>' + html + '</pre>')
     return response
+
+
+
+def statistics(request):
+    # Récupérer les réservations et calculer les statistiques
+    total_reservations = Reservation.objects.count()
+    accepted_count = Reservation.objects.filter(status='accepted').count()
+    rejected_count = Reservation.objects.filter(status='rejected').count()
+    pending_count = Reservation.objects.filter(status='pending').count()
+
+    context = {
+        'total_reservations': total_reservations,
+        'accepted_count': accepted_count,
+        'rejected_count': rejected_count,
+        'pending_count': pending_count,
+    }
+    return render(request, 'backOffice/pages/Reservation/statistics.html', context)

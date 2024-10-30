@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include 'backOffice/partials/head.html' %}
+    <link rel="stylesheet" href="{% static 'backOffice/assets/css/theme.css' %}">
+    <title>Statistiques des Réservations</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div id="db-wrapper">
+        {% include 'backOffice/partials/navbar-vertical.html' with page="Statistics" %}
+        <div id="page-content">
+            {% include 'backOffice/partials/header.html' %}
+            <div class="d-flex justify-content-center">
+
+                <div class="container-fluid p-6 w-auto center">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-12">
+                            <div class="border-bottom pb-4 mb-4">
+                                <h3 class="mt-4">Statistiques des Réservations</h3>
+                                <canvas id="reservationChart" width="20" height="20"></canvas>
+                                <script>
+                                    const ctx = document.getElementById('reservationChart').getContext('2d');
+                                    const reservationChart = new Chart(ctx, {
+                                        type: 'pie',
+                                        data: {
+                                            labels: ['Accepted', 'Rejected', 'Pending'],
+                                            datasets: [{
+                                                data: [{{ accepted_count }}, {{ rejected_count }}, {{ pending_count }}],
+                                    backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
+                            }]
+                        },
+                                    options: {
+                                        responsive: true,
+                                            plugins: {
+                                            legend: {
+                                                display: true,
+                                                    position: 'top',
+                                },
+                                        }
+                                    }
+                    });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            {% include 'backOffice/partials/scripts.html' %}
+</body>
+
+</html>
