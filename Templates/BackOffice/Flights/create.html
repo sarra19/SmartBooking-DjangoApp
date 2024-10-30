@@ -76,17 +76,87 @@
                                 <label for="image">Flight Image</label>
                                 <input type="file" class="form-control" id="image" name="image">
                             </div>
+                            <div class="col-md-6 mb-3">
+                                <button type="button" class="btn btn-info mt-3" id="generate-description-btn" data-flight-id="{{ flight.id }}">✨Generate Description</button>
+                            </div>
+                            
                         </div>
-
+<!-- Cadre pour afficher la description générée -->
+<!-- <div class="col-md-12 mt-4">
+    <div class="card p-3" id="description-card" style="display: none;">
+        <h5>Generated Flight Description</h5>
+        <p id="description-content"></p>
+    </div>
+</div> -->
                         <div class="d-flex justify-content-between mt-4">
                             <a href="{% url 'Flight:flight_list' %}" class="btn btn-secondary">Return to List</a>
-                            <button type="submit" class="btn btn-primary">Create Flight</button>
+                            <button type="submit" class="btn btn-success">Create Flight</button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
+    
+   <!-- Modal for displaying the generated description -->
+   <div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descriptionModalLabel">Generated Flight Description</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="description-content"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script AJAX et JavaScript -->
+<script>
+document.getElementById('generate-description-btn').addEventListener('click', function(event) {
+    event.preventDefault();
+
+    const flightData = {
+        flight_name: document.getElementById('flight_name').value,
+        flight_number: document.getElementById('flight_number').value,
+        departure_city: document.getElementById('departure_city').value,
+        arrival_city: document.getElementById('arrival_city').value,
+        departure_date: document.getElementById('departure_date').value,
+        arrival_date: document.getElementById('arrival_date').value,
+        airline: document.getElementById('airline').value,
+        price_per_place: document.getElementById('price_per_place').value,
+    };
+
+    fetch("{% url 'Flight:generate_description' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify(flightData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.description) {
+            document.getElementById('description-content').textContent = data.description;
+            
+            // Active l'affichage du modal
+            new bootstrap.Modal(document.getElementById('descriptionModal')).show();
+        } else if (data.error) {
+            console.error('Erreur :', data.error);
+        }
+    })
+    .catch(error => console.error('Erreur lors de la génération de la description:', error));
+});
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
 

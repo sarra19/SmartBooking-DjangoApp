@@ -16,6 +16,40 @@ from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.platypus import Image
 from reportlab.lib.styles import getSampleStyleSheet
+import google.generativeai as genai
+import os
+from django.shortcuts import get_object_or_404
+import json
+from django.views.decorators.csrf import csrf_exempt
+
+GOOGLE_API_KEY = 'AIzaSyC2wjxT8ovBxQsghaOSkReZGaj4AktXKgs'
+
+# GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+genai.configure(api_key=GOOGLE_API_KEY)
+
+def ai_generate_description(flight_data):
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    prompt = (
+        f"Generate a detailed description for a flight with the following details:\n"
+        f"Flight Name: {flight_data['flight_name']}\n"
+        f"Flight Number: {flight_data['flight_number']}\n"
+        f"Departure: {flight_data['departure_city']} on {flight_data['departure_date']}\n"
+        f"Arrival: {flight_data['arrival_city']} on {flight_data['arrival_date']}\n"
+        f"Airline: {flight_data['airline']}\n"
+        f"Price: {flight_data['price_per_place']}\n"
+        f"Please provide a concise description in 5 lines."
+    )
+    response = model.generate_content(prompt)
+    return response.text
+
+@csrf_exempt
+def generate_description(request):
+    if request.method == 'POST':
+        flight_data = json.loads(request.body)
+        description = ai_generate_description(flight_data)
+        return JsonResponse({'description': description})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 
 
