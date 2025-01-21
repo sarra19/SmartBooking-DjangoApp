@@ -53,7 +53,6 @@
                           <p class="mb-2"><i class="fas fa-home"></i> Type: {{ accommodation.type_of_accommodation }}</p>
                           <p class="mb-2"><i class="fas fa-dollar-sign"></i> Price: {{ accommodation.price_per_night }} DT per night</p>
                           <p class="mb-2"><i class="fas fa-concierge-bell"></i> Amenities: {{ accommodation.amenities }}</p> <!-- Updated this line -->
-
                           <a href="{% url 'accommodation:review_detail' accommodation.id %}" class="btn btn-primary rounded-pill">View Reviews</a>
                           <!-- <a href="{% url 'accommodation:detail' accommodation.id %}" class="btn btn-primary rounded-pill">View Details</a> -->
       

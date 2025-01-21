@@ -19,6 +19,10 @@ from django.urls import path , include
 from smartBooking_app.views import signin  # Assurez-vous d'importer la vue home
 from django.conf import settings
 from django.conf.urls.static import static
+<<<<<<< HEAD
+=======
+
+>>>>>>> e4a35a701cf9c1cb2afdbe804cd644ef63dd5eed
 urlpatterns = [
     path('admin/', admin.site.urls),
     path ('front/' , include('smartBooking_app.urls_front', namespace='front')),
@@ -26,9 +30,15 @@ urlpatterns = [
     path('accommodation/', include('Accommodation.urls', namespace='accommodation')),
 
     path('', signin, name='signin'),  # Ajoutez cette ligne pour rediriger vers la vue home
+    path('event/', include(('Event.urls', 'Event'), namespace='Event')),
 
 
+<<<<<<< HEAD
 ]
+=======
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+>>>>>>> e4a35a701cf9c1cb2afdbe804cd644ef63dd5eed
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
